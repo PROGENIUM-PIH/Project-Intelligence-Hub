@@ -7,6 +7,7 @@ import {
   ShieldAlert,
   Settings,
   Inbox,
+  FileSpreadsheet,
   type LucideIcon,
 } from "lucide-react";
 
@@ -19,6 +20,7 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/updates", label: "Data Intake", icon: Inbox },
+  { href: "/reports", label: "Reports", icon: FileSpreadsheet },
   { href: "/markets", label: "Markets", icon: Globe },
   { href: "/initiatives", label: "Initiatives", icon: Target },
   { href: "/meetings", label: "Meetings", icon: CalendarDays },

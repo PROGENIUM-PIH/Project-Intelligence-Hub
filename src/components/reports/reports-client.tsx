@@ -1,0 +1,46 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { Download, FileSpreadsheet, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+
+type Props = { markets: { id: string; name: string; code: string }[]; initiatives: { id: string; code: string; name: string }[] };
+
+export function ReportsClient({ markets, initiatives }: Props) {
+  const [marketId, setMarketId] = useState(markets[0]?.id ?? "");
+  const [initiativeId, setInitiativeId] = useState(initiatives[0]?.id ?? "");
+  const [weeks, setWeeks] = useState("6");
+  const [prompt, setPrompt] = useState("Please give me an overview about ID4 in Germany for the last 6 weeks. What did we do, where are the challenges, what are the deadlines?");
+
+  const selectedMarket = markets.find((m) => m.id === marketId);
+  const selectedInitiative = initiatives.find((i) => i.id === initiativeId);
+  const downloadUrl = useMemo(() => `/api/reports?marketId=${encodeURIComponent(marketId)}&initiativeId=${encodeURIComponent(initiativeId)}&weeks=${encodeURIComponent(weeks)}`, [marketId, initiativeId, weeks]);
+
+  function interpretPrompt() {
+    const lower = prompt.toLowerCase();
+    const market = markets.find((m) => lower.includes(m.name.toLowerCase()) || lower.includes(m.code.toLowerCase()));
+    const initiative = initiatives.find((i) => lower.includes(i.code.toLowerCase()) || lower.includes(i.name.toLowerCase()));
+    const weekMatch = lower.match(/(?:last|past)\s+(\d+)\s+weeks?/);
+    if (market) setMarketId(market.id);
+    if (initiative) setInitiativeId(initiative.id);
+    if (weekMatch) setWeeks(weekMatch[1]);
+  }
+
+  return <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+    <Card><CardHeader><div className="flex items-center gap-2"><Sparkles className="h-5 w-5"/><CardTitle>Ask for a report</CardTitle></div><CardDescription>Describe the management question. The MVP translates market, initiative and time window into a structured export.</CardDescription></CardHeader><CardContent className="space-y-4">
+      <Textarea rows={6} value={prompt} onChange={(e)=>setPrompt(e.target.value)} placeholder="e.g. Give me an overview of ID4 in Germany for the last 6 weeks..." />
+      <Button onClick={interpretPrompt}>Prepare Report Scope</Button>
+      <div className="rounded-lg border bg-secondary/40 p-4 text-sm"><p className="font-medium">Report will cover</p><p className="mt-2"><span className="text-muted-foreground">Market:</span> {selectedMarket?.name ?? "—"}</p><p><span className="text-muted-foreground">Initiative:</span> {selectedInitiative?.code ?? "—"}</p><p><span className="text-muted-foreground">Period:</span> Last {weeks} weeks</p><p className="mt-2 text-muted-foreground">Included data: meeting notes, project activities, challenges/risks, actions and deadlines, plus the current structured status.</p></div>
+    </CardContent></Card>
+
+    <Card><CardHeader><div className="flex items-center gap-2"><FileSpreadsheet className="h-5 w-5"/><CardTitle>Structured CSV Export</CardTitle></div><CardDescription>Project Managers and admins can also set the scope explicitly before exporting.</CardDescription></CardHeader><CardContent className="space-y-4">
+      <label className="grid gap-1.5 text-sm">Market<select className="h-10 rounded-md border bg-background px-3" value={marketId} onChange={(e)=>setMarketId(e.target.value)}>{markets.map(m=><option key={m.id} value={m.id}>{m.name} ({m.code})</option>)}</select></label>
+      <label className="grid gap-1.5 text-sm">Initiative<select className="h-10 rounded-md border bg-background px-3" value={initiativeId} onChange={(e)=>setInitiativeId(e.target.value)}>{initiatives.map(i=><option key={i.id} value={i.id}>{i.code} — {i.name}</option>)}</select></label>
+      <label className="grid gap-1.5 text-sm">Time window<select className="h-10 rounded-md border bg-background px-3" value={weeks} onChange={(e)=>setWeeks(e.target.value)}><option value="2">Last 2 weeks</option><option value="4">Last 4 weeks</option><option value="6">Last 6 weeks</option><option value="12">Last 12 weeks</option><option value="26">Last 6 months</option><option value="52">Last 12 months</option></select></label>
+      <Button asChild className="w-full"><a href={downloadUrl}><Download className="h-4 w-4"/>Download CSV</a></Button>
+      <p className="text-xs text-muted-foreground">CSV keeps source-level rows instead of hiding them behind an AI summary, so the report remains auditable.</p>
+    </CardContent></Card>
+  </div>;
+}

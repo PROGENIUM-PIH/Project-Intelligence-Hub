@@ -6,6 +6,7 @@ import {
   ListChecks,
   ShieldAlert,
   Settings,
+  FileSpreadsheet,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,5 +23,6 @@ export const navItems: NavItem[] = [
   { href: "/meetings", label: "Meetings", icon: CalendarDays },
   { href: "/tasks", label: "Tasks", icon: ListChecks },
   { href: "/risks", label: "Risks", icon: ShieldAlert },
+  { href: "/reports", label: "Reports", icon: FileSpreadsheet },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

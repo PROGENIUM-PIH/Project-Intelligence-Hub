@@ -19,6 +19,18 @@ const meetingSchema = z
     path: ["marketId"],
   });
 
+const calendarImportSchema = z.array(
+  z.object({
+    title: z.string().min(1),
+    date: z.coerce.date(),
+    notes: z.string().default("Imported from Outlook calendar."),
+    marketId: z.string().optional().nullable(),
+    initiativeId: z.string().optional().nullable(),
+  }).refine((data) => !!data.marketId || !!data.initiativeId, {
+    message: "Assign at least one market or initiative before importing.",
+  })
+).min(1);
+
 export type MeetingInput = z.infer<typeof meetingSchema>;
 
 function normalize(input: MeetingInput) {
@@ -49,6 +61,37 @@ export async function createMeeting(input: MeetingInput) {
   revalidatePath("/meetings");
   revalidatePath("/dashboard");
   return meeting;
+}
+
+export async function importCalendarMeetings(input: unknown) {
+  const meetings = calendarImportSchema.parse(input);
+  const created = [];
+  for (const item of meetings) {
+    const meeting = await prisma.meeting.create({
+      data: {
+        title: item.title,
+        type: "OTHER",
+        scope: item.initiativeId ? "INITIATIVE" : "MARKET",
+        date: item.date,
+        notes: item.notes || "Imported from Outlook calendar.",
+        marketId: item.marketId ?? null,
+        initiativeId: item.initiativeId ?? null,
+      },
+    });
+    created.push(meeting);
+    await prisma.activity.create({
+      data: {
+        type: "CALENDAR_MEETING_IMPORTED",
+        description: `Imported calendar meeting "${meeting.title}"`,
+        entityType: "Meeting",
+        entityId: meeting.id,
+        actor: "You",
+      },
+    });
+  }
+  revalidatePath("/meetings");
+  revalidatePath("/dashboard");
+  return { count: created.length };
 }
 
 export async function updateMeeting(id: string, input: MeetingInput) {

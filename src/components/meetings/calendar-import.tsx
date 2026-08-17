@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
-import { CalendarDays, Check, FileUp, Loader2 } from "lucide-react";
+import { addDays, format, startOfDay } from "date-fns";
+import { CalendarDays, Check, FileUp, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { importCalendarMeetings } from "@/lib/actions/meetings";
@@ -32,15 +32,9 @@ function unescapeIcs(value: string) {
 
 function parseDate(value: string) {
   const v = value.trim();
-  if (/^\d{8}$/.test(v)) {
-    return new Date(Number(v.slice(0,4)), Number(v.slice(4,6))-1, Number(v.slice(6,8)));
-  }
-  if (/^\d{8}T\d{6}Z$/.test(v)) {
-    return new Date(Date.UTC(Number(v.slice(0,4)),Number(v.slice(4,6))-1,Number(v.slice(6,8)),Number(v.slice(9,11)),Number(v.slice(11,13)),Number(v.slice(13,15))));
-  }
-  if (/^\d{8}T\d{6}$/.test(v)) {
-    return new Date(Number(v.slice(0,4)),Number(v.slice(4,6))-1,Number(v.slice(6,8)),Number(v.slice(9,11)),Number(v.slice(11,13)),Number(v.slice(13,15)));
-  }
+  if (/^\d{8}$/.test(v)) return new Date(Number(v.slice(0,4)), Number(v.slice(4,6))-1, Number(v.slice(6,8)));
+  if (/^\d{8}T\d{6}Z$/.test(v)) return new Date(Date.UTC(Number(v.slice(0,4)),Number(v.slice(4,6))-1,Number(v.slice(6,8)),Number(v.slice(9,11)),Number(v.slice(11,13)),Number(v.slice(13,15))));
+  if (/^\d{8}T\d{6}$/.test(v)) return new Date(Number(v.slice(0,4)),Number(v.slice(4,6))-1,Number(v.slice(6,8)),Number(v.slice(9,11)),Number(v.slice(11,13)),Number(v.slice(13,15)));
   return new Date(v);
 }
 
@@ -78,16 +72,23 @@ function parseIcs(text: string): ParsedMeeting[] {
   }).filter((meeting) => !Number.isNaN(meeting.start.getTime()));
 }
 
+function nextSevenDays(meetings: ParsedMeeting[]) {
+  const from = startOfDay(new Date());
+  const until = addDays(from, 7);
+  return meetings.filter((meeting) => meeting.start >= from && meeting.start < until);
+}
+
 export function CalendarImport({ markets, initiatives, onImported }: { markets: Option[]; initiatives: Option[]; onImported: () => void }) {
   const [meetings, setMeetings] = useState<ParsedMeeting[]>([]);
-  const [fileName, setFileName] = useState("");
+  const [sourceLabel, setSourceLabel] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [loadingFeed, setLoadingFeed] = useState(false);
 
   async function loadFile(file: File | undefined) {
     if (!file) return;
     setError("");
-    setFileName(file.name);
+    setSourceLabel(file.name);
     const parsed = parseIcs(await file.text());
     if (!parsed.length) {
       setMeetings([]);
@@ -95,6 +96,33 @@ export function CalendarImport({ markets, initiatives, onImported }: { markets: 
       return;
     }
     setMeetings(parsed);
+  }
+
+  async function loadOutlookFeed() {
+    setLoadingFeed(true);
+    setError("");
+    try {
+      const response = await fetch("/api/calendar/feed", { cache: "no-store" });
+      const contentType = response.headers.get("content-type") || "";
+      if (!response.ok) {
+        const body = contentType.includes("application/json") ? await response.json() : null;
+        throw new Error(body?.error || "Outlook calendar could not be loaded.");
+      }
+      const parsed = nextSevenDays(parseIcs(await response.text()));
+      if (!parsed.length) {
+        setMeetings([]);
+        setSourceLabel("Outlook · next 7 days");
+        setError("No meetings were found in the next 7 days.");
+        return;
+      }
+      setMeetings(parsed);
+      setSourceLabel("Outlook · next 7 days");
+    } catch (e) {
+      setMeetings([]);
+      setError(e instanceof Error ? e.message : "Outlook calendar could not be loaded.");
+    } finally {
+      setLoadingFeed(false);
+    }
   }
 
   function patch(id: string, values: Partial<ParsedMeeting>) {
@@ -134,16 +162,23 @@ export function CalendarImport({ markets, initiatives, onImported }: { markets: 
   return <div className="space-y-4">
     <div className="rounded-xl border bg-secondary/30 p-4">
       <CalendarDays className="mb-2 h-5 w-5" />
-      <p className="font-medium">Manual Outlook calendar import</p>
-      <p className="mt-1 text-sm text-muted-foreground">Upload an Outlook .ics file. PIH reads title, date/time, organizer, participants, location and description. Then assign the relevant project context before saving.</p>
+      <p className="font-medium">Outlook calendar intake</p>
+      <p className="mt-1 text-sm text-muted-foreground">Load the next 7 days directly from the configured Outlook calendar feed, or upload an .ics file manually. Review the meetings and assign Market + Initiative before importing.</p>
     </div>
 
-    <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed p-6 text-sm font-medium hover:bg-secondary/30">
-      <FileUp className="h-4 w-4" />
-      {fileName || "Upload Outlook calendar (.ics)"}
-      <Input className="hidden" type="file" accept=".ics,text/calendar" onChange={(e) => loadFile(e.target.files?.[0])} />
-    </label>
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Button className="h-auto min-h-16 justify-start bg-[#78FAAE] px-4 py-3 text-left text-[#0D3B32] hover:bg-[#78FAAE]/90" onClick={loadOutlookFeed} disabled={loadingFeed}>
+        {loadingFeed ? <Loader2 className="h-5 w-5 animate-spin" /> : <RefreshCw className="h-5 w-5" />}
+        <span><span className="block font-semibold">Load next 7 days</span><span className="block text-xs font-normal">From Outlook calendar feed</span></span>
+      </Button>
+      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed px-4 py-3 text-sm font-medium hover:bg-secondary/30">
+        <FileUp className="h-5 w-5" />
+        <span><span className="block">Upload .ics manually</span><span className="block text-xs font-normal text-muted-foreground">Fallback / testing</span></span>
+        <Input className="hidden" type="file" accept=".ics,text/calendar" onChange={(e) => loadFile(e.target.files?.[0])} />
+      </label>
+    </div>
 
+    {sourceLabel && <p className="text-xs text-muted-foreground">Source: {sourceLabel}</p>}
     {error && <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{error}</div>}
 
     {meetings.length > 0 && <div className="space-y-3">

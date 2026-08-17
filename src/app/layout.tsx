@@ -5,10 +5,26 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 const skodaNext = localFont({
-  src: "../fonts/SKODANext-Black.ttf",
+  src: [
+    {
+      path: "../fonts/SKODANext-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../fonts/SKODANext-Regular.ttf",
+      weight: "400 700",
+      style: "normal",
+    },
+    {
+      path: "../fonts/SKODANext-Black.ttf",
+      weight: "800 900",
+      style: "normal",
+    },
+  ],
   variable: "--font-sans",
-  weight: "900",
   display: "swap",
+  fallback: ["Arial", "sans-serif"],
 });
 
 const geistMono = Geist_Mono({

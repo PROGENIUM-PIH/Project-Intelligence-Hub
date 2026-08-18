@@ -13,14 +13,13 @@ const milestones = [
 ] as const;
 
 type Props = {
-  marketInitiativeId: string;
-  initiativeCode: string;
-  initiativeName: string;
+  marketId: string;
+  marketName: string;
   autoCompleted?: number;
 };
 
-export function MilestoneJourney({ marketInitiativeId, initiativeCode, initiativeName, autoCompleted = 0 }: Props) {
-  const storageKey = `pih-milestones:${marketInitiativeId}`;
+export function MilestoneJourney({ marketId, marketName, autoCompleted = 0 }: Props) {
+  const storageKey = `pih-market-milestones:${marketId}`;
   const [manualCompleted, setManualCompleted] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
@@ -41,11 +40,11 @@ export function MilestoneJourney({ marketInitiativeId, initiativeCode, initiativ
     window.localStorage.setItem(storageKey, String(next));
   };
 
-  const sourceText = useMemo(() => autoCompleted > 0 ? `${autoCompleted} milestone${autoCompleted > 1 ? "s" : ""} detected from meetings` : "Manual confirmation", [autoCompleted]);
+  const sourceText = useMemo(() => autoCompleted > 0 ? `${autoCompleted} milestone${autoCompleted > 1 ? "s" : ""} detected from market meetings` : "Manual confirmation", [autoCompleted]);
 
   return <div className="rounded-xl border p-4">
     <div className="flex flex-wrap items-start justify-between gap-3">
-      <div><p className="text-sm font-semibold">{initiativeCode} · {initiativeName}</p><p className="mt-1 text-xs text-muted-foreground">Current milestone: <span className="font-medium text-foreground">{currentLabel}</span> · {completed}/5 · {progress}%</p></div>
+      <div><p className="text-sm font-semibold">{marketName}</p><p className="mt-1 text-xs text-muted-foreground">Current milestone: <span className="font-medium text-foreground">{currentLabel}</span> · {completed}/5 · {progress}%</p></div>
       <span className="rounded-full bg-[#78FAAE] px-2.5 py-1 text-[11px] font-semibold text-[#0E3A2F]">{completed >= 5 ? "Complete" : "In progress"}</span>
     </div>
     <div className="mt-5 grid grid-cols-5 gap-1">

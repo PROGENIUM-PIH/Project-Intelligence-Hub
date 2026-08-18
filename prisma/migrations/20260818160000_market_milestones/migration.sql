@@ -1,0 +1,3 @@
+ALTER TABLE "Market"
+ADD COLUMN "milestoneCompleted" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN "milestoneUpdatedAt" TIMESTAMP(3);

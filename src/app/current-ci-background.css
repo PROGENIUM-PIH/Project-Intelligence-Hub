@@ -1,3 +1,8 @@
+html:not([data-pih-theme="new-web"]) {
+  --background: #E8E7E2;
+  --sidebar-foreground: #E8E7E2;
+}
+
 html:not([data-pih-theme="new-web"]) body {
   background-color: #E8E7E2;
 }

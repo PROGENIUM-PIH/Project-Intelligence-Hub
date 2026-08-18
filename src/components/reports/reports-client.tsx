@@ -8,6 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 
 type Props = { markets: { id: string; name: string; code: string }[]; initiatives: { id: string; code: string; name: string }[] };
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function hasToken(text: string, token: string) {
+  return new RegExp(`(^|[^a-z0-9])${escapeRegExp(token.toLowerCase())}([^a-z0-9]|$)`, "i").test(text);
+}
+
 export function ReportsClient({ markets, initiatives }: Props) {
   const [marketId, setMarketId] = useState(markets[0]?.id ?? "");
   const [initiativeId, setInitiativeId] = useState(initiatives[0]?.id ?? "");
@@ -18,13 +26,34 @@ export function ReportsClient({ markets, initiatives }: Props) {
   const query = useMemo(() => `marketId=${encodeURIComponent(marketId)}&initiativeId=${encodeURIComponent(initiativeId)}&weeks=${encodeURIComponent(weeks)}`, [marketId, initiativeId, weeks]);
   const downloadUrl = `/api/reports?${query}`;
   const managementUrl = `/reports/management?${query}`;
+
   function interpretPrompt() {
     const lower = prompt.toLowerCase();
-    const market = markets.find((m) => lower.includes(m.name.toLowerCase()) || lower.includes(m.code.toLowerCase()));
-    const initiative = initiatives.find((i) => lower.includes(i.code.toLowerCase()) || lower.includes(i.name.toLowerCase()));
+
+    const market = markets.find((m) =>
+      lower.includes(m.name.toLowerCase()) || hasToken(lower, m.code)
+    );
+
+    const explicitInitiativeMatch = lower.match(/\bid\s*0*(\d+)\b/i);
+    let initiative = initiatives.find((i) =>
+      hasToken(lower, i.code) || lower.includes(i.name.toLowerCase())
+    );
+
+    if (!initiative && explicitInitiativeMatch) {
+      const requestedNumber = Number(explicitInitiativeMatch[1]);
+      initiative = initiatives.find((i) => {
+        const codeMatch = i.code.match(/(\d+)/);
+        return codeMatch ? Number(codeMatch[1]) === requestedNumber : false;
+      });
+    }
+
     const weekMatch = lower.match(/(?:last|past)\s+(\d+)\s+weeks?/);
-    if (market) setMarketId(market.id); if (initiative) setInitiativeId(initiative.id); if (weekMatch) setWeeks(weekMatch[1]);
+
+    if (market) setMarketId(market.id);
+    if (initiative) setInitiativeId(initiative.id);
+    if (weekMatch) setWeeks(weekMatch[1]);
   }
+
   return <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
     <Card><CardHeader><div className="flex items-center gap-2"><Sparkles className="h-5 w-5"/><CardTitle>Ask for a report</CardTitle></div><CardDescription>Describe the management question and prepare the report scope.</CardDescription></CardHeader><CardContent className="space-y-4">
       <Textarea rows={6} value={prompt} onChange={(e)=>setPrompt(e.target.value)} />

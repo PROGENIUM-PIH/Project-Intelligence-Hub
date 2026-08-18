@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,8 +7,22 @@ import { healthTone } from "@/lib/status";
 
 type Entity = { id: string; name: string; status: string; code?: string; };
 
+const marketFlagFiles: Record<string, string> = {
+  france: "/flags/france.png",
+  germany: "/flags/germany.png",
+  austria: "/flags/austria.png",
+  poland: "/flags/poland.png",
+  norway: "/flags/norway.png",
+  "czech republic": "/flags/czech-republic.png",
+  czechia: "/flags/czech-republic.png",
+  netherlands: "/flags/netherlands.png",
+  uk: "/flags/uk.png",
+  "united kingdom": "/flags/uk.png",
+};
+
 export function StatusOverview({ title, href, items }: { title: string; href: string; items: Entity[] }) {
   const isInitiatives = title === "Initiatives";
+  const isMarkets = title === "Markets";
   return (
     <Card className="pih-module-card pih-status-overview flex h-[430px] flex-col">
       <CardHeader className="flex shrink-0 flex-row items-center justify-between pb-3">
@@ -17,9 +32,13 @@ export function StatusOverview({ title, href, items }: { title: string; href: st
       <CardContent className={`min-h-0 flex-1 space-y-1 pr-3 ${isInitiatives ? "pih-overview-scroll overflow-y-auto" : "overflow-hidden"}`}>
         {items.map((item) => {
           const { label, tone } = healthTone(item.status);
+          const flagSrc = isMarkets ? marketFlagFiles[item.name.trim().toLowerCase()] : undefined;
           return (
             <Link href={`${href}/${item.id}`} key={item.id} className="pih-data-row group flex items-center justify-between gap-4 rounded-xl px-3 py-2">
-              <span className="truncate text-sm text-foreground">{item.code ? <span className="mr-1.5 text-muted-foreground">{item.code}</span> : null}{item.name}</span>
+              <span className="flex min-w-0 items-center gap-2.5">
+                {flagSrc ? <span className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full border border-border"><Image src={flagSrc} alt={`${item.name} flag`} fill sizes="24px" className="object-cover" /></span> : null}
+                <span className="truncate text-sm text-foreground">{item.code ? <span className="mr-1.5 text-muted-foreground">{item.code}</span> : null}{item.name}</span>
+              </span>
               <div className="flex items-center gap-2"><StatusBadge label={label} tone={tone} /><ArrowRight className="pih-row-arrow h-3.5 w-3.5 text-muted-foreground" /></div>
             </Link>
           );

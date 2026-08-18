@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
+import "./current-ci-background.css";
 
 const skodaNext = localFont({
   src: "../fonts/SKODANext-Black.ttf",

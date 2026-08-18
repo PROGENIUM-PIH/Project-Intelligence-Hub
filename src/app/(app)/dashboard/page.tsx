@@ -7,6 +7,8 @@ import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
 import { UpcomingMeetings } from "@/components/dashboard/upcoming-meetings";
 import { MilestoneHeatmap } from "@/components/dashboard/milestone-heatmap";
 
+export const dynamic = "force-dynamic";
+
 function detectedMarketMilestones(meetings:{title:string;notes:string;date:Date}[]){
   const relevant=meetings.filter(m=>m.date<=new Date());
   const onboarding=relevant.some(m=>/onboard|kick.?off/.test(`${m.title} ${m.notes}`.toLowerCase()));

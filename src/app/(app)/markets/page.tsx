@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
@@ -5,8 +6,18 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { healthTone } from "@/lib/status";
 
-const marketFlags: Record<string, string> = { FR: "🇫🇷", FRA: "🇫🇷", DE: "🇩🇪", DEU: "🇩🇪", GER: "🇩🇪", AT: "🇦🇹", AUT: "🇦🇹", AU: "🇦🇹", PL: "🇵🇱", POL: "🇵🇱", NO: "🇳🇴", NOR: "🇳🇴", CZ: "🇨🇿", CZE: "🇨🇿", NL: "🇳🇱", NLD: "🇳🇱", UK: "🇬🇧", GB: "🇬🇧", GBR: "🇬🇧" };
-const marketNameFlags: Record<string, string> = { france: "🇫🇷", germany: "🇩🇪", austria: "🇦🇹", poland: "🇵🇱", norway: "🇳🇴", "czech republic": "🇨🇿", czechia: "🇨🇿", netherlands: "🇳🇱", uk: "🇬🇧", "united kingdom": "🇬🇧" };
+const marketFlagImages: Record<string, string> = {
+  france: "/flags/france.svg",
+  germany: "/flags/germany.svg",
+  austria: "/flags/austria.svg",
+  poland: "/flags/poland.svg",
+  norway: "/flags/norway.svg",
+  "czech republic": "/flags/czech-republic.svg",
+  czechia: "/flags/czech-republic.svg",
+  netherlands: "/flags/netherlands.svg",
+  uk: "/flags/uk.svg",
+  "united kingdom": "/flags/uk.svg",
+};
 
 export default async function MarketsPage() {
   const markets = await prisma.market.findMany({ orderBy: { name: "asc" }, include: { initiatives: true } });
@@ -16,14 +27,14 @@ export default async function MarketsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {markets.map((market) => {
           const { label, tone } = healthTone(market.status);
-          const flag = marketNameFlags[market.name.trim().toLowerCase()] ?? marketFlags[market.code.trim().toUpperCase()] ?? "🌐";
+          const flagSrc = marketFlagImages[market.name.trim().toLowerCase()];
           return (
             <Link key={market.id} href={`/markets/${market.id}`} className="group block h-full">
               <Card className="pih-entity-card h-full transition-shadow hover:shadow-md">
                 <CardHeader className="flex flex-row items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="pih-flag-icon flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-secondary text-2xl leading-none" aria-label={`${market.name} flag`}>
-                      <span>{flag}</span>
+                    <div className="pih-flag-icon relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-border bg-secondary" aria-label={`${market.name} flag`}>
+                      {flagSrc ? <Image src={flagSrc} alt={`${market.name} flag`} fill sizes="40px" className="object-cover" /> : <span className="flex h-full w-full items-center justify-center text-xs font-semibold">{market.code}</span>}
                     </div>
                     <div><p className="text-xs font-medium text-muted-foreground">{market.code}</p><p className="text-base font-semibold text-foreground">{market.name}</p></div>
                   </div>

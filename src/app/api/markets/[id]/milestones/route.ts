@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -16,6 +17,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       data: { milestoneCompleted: completed, milestoneUpdatedAt: new Date() },
       select: { id: true, milestoneCompleted: true, milestoneUpdatedAt: true },
     });
+    revalidatePath("/dashboard");
+    revalidatePath(`/markets/${id}`);
     return NextResponse.json(market);
   } catch {
     return NextResponse.json({ error: "Unable to save milestone progress." }, { status: 500 });

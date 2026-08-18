@@ -6,3 +6,9 @@ html:not([data-pih-theme="new-web"]) {
 html:not([data-pih-theme="new-web"]) body {
   background-color: #E8E7E2;
 }
+
+/* Keep the native source-file picker compact in Current CI. */
+html:not([data-pih-theme="new-web"]) input[type="file"] {
+  width: 100%;
+  max-width: 24rem;
+}

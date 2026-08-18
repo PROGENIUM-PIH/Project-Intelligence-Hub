@@ -62,6 +62,8 @@ model Market {
   region    String
   lead      String
   status    Health   @default(ON_TRACK)
+  milestoneCompleted Int @default(0)
+  milestoneUpdatedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

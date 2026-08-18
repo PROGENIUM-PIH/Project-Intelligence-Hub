@@ -1,0 +1,3 @@
+html:not([data-pih-theme="new-web"]) body {
+  background-color: #E8E7E2;
+}

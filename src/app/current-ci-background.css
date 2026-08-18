@@ -7,8 +7,18 @@ html:not([data-pih-theme="new-web"]) body {
   background-color: #E8E7E2;
 }
 
-/* Keep the native source-file picker compact in Current CI. */
+/* Keep the native source-file picker genuinely compact in Current CI. */
 html:not([data-pih-theme="new-web"]) input[type="file"] {
-  width: 100%;
-  max-width: 24rem;
+  width: 18rem !important;
+  max-width: 18rem !important;
+  height: 2.25rem !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  line-height: 2.25rem !important;
+}
+
+html:not([data-pih-theme="new-web"]) input[type="file"]::file-selector-button {
+  height: 2.25rem;
+  margin: 0 0.5rem 0 0;
+  padding: 0 0.75rem;
 }

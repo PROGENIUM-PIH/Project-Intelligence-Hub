@@ -3,95 +3,45 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-background: var(--background); --color-foreground: var(--foreground); --font-sans: var(--font-sans); --font-mono: var(--font-geist-mono); --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring); --color-sidebar-border: var(--sidebar-border); --color-sidebar-accent-foreground: var(--sidebar-accent-foreground); --color-sidebar-accent: var(--sidebar-accent); --color-sidebar-primary-foreground: var(--sidebar-primary-foreground); --color-sidebar-primary: var(--sidebar-primary); --color-sidebar-foreground: var(--sidebar-foreground); --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5); --color-chart-4: var(--chart-4); --color-chart-3: var(--chart-3); --color-chart-2: var(--chart-2); --color-chart-1: var(--chart-1); --color-ring: var(--ring); --color-input: var(--input); --color-border: var(--border); --color-destructive: var(--destructive); --color-accent-foreground: var(--accent-foreground); --color-accent: var(--accent); --color-muted-foreground: var(--muted-foreground); --color-muted: var(--muted); --color-secondary-foreground: var(--secondary-foreground); --color-secondary: var(--secondary); --color-primary-foreground: var(--primary-foreground); --color-primary: var(--primary); --color-popover-foreground: var(--popover-foreground); --color-popover: var(--popover); --color-card-foreground: var(--card-foreground); --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6); --radius-md: calc(var(--radius) * 0.8); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) * 1.4); --radius-2xl: calc(var(--radius) * 1.8); --radius-3xl: calc(var(--radius) * 2.2); --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-  /* Page background (#F1F2F2) sits behind white cards (#FFFFFF) */
-  --background: #F1F2F2;
-  --foreground: #14201B;
-  --card: #FFFFFF;
-  --card-foreground: #14201B;
-  --popover: #FFFFFF;
-  --popover-foreground: #14201B;
-  /* Emerald Green is the dominant brand color */
-  --primary: #0E3A2F;
-  --primary-foreground: #FFFFFF;
-  --secondary: #E7E9E8;
-  --secondary-foreground: #14201B;
-  --muted: #E7E9E8;
-  --muted-foreground: #5B655F;
-  --accent: #E3F9EC;
-  --accent-foreground: #0E3A2F;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #DEE1E0;
-  --input: #DEE1E0;
-  --ring: #0E3A2F;
-  --chart-1: #0E3A2F;
-  --chart-2: #78FAAE;
-  --chart-3: #5B655F;
-  --chart-4: #14493B;
-  --chart-5: #A9B0AC;
-  --radius: 0.625rem;
-  /* Sidebar: Emerald Green background, Electric Green nav buttons (never used as brand color elsewhere) */
-  --sidebar: #0E3A2F;
-  --sidebar-foreground: #F1F2F2;
-  --sidebar-primary: #78FAAE;
-  --sidebar-primary-foreground: #0E3A2F;
-  --sidebar-accent: #14493B;
-  --sidebar-accent-foreground: #F1F2F2;
-  --sidebar-border: #0B2D24;
-  --sidebar-ring: #78FAAE;
+  --background: #F1F2F2; --foreground: #14201B; --card: #FFFFFF; --card-foreground: #14201B; --popover: #FFFFFF; --popover-foreground: #14201B;
+  --primary: #0E3A2F; --primary-foreground: #FFFFFF; --secondary: #E7E9E8; --secondary-foreground: #14201B; --muted: #E7E9E8; --muted-foreground: #5B655F; --accent: #E3F9EC; --accent-foreground: #0E3A2F; --destructive: oklch(0.577 0.245 27.325); --border: #DEE1E0; --input: #DEE1E0; --ring: #0E3A2F;
+  --chart-1: #0E3A2F; --chart-2: #78FAAE; --chart-3: #5B655F; --chart-4: #14493B; --chart-5: #A9B0AC; --radius: 0.625rem;
+  --sidebar: #0E3A2F; --sidebar-foreground: #F1F2F2; --sidebar-primary: #78FAAE; --sidebar-primary-foreground: #0E3A2F; --sidebar-accent: #14493B; --sidebar-accent-foreground: #F1F2F2; --sidebar-border: #0B2D24; --sidebar-ring: #78FAAE;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
+/* New Web CI is deliberately opt-in. Current CI above remains the default and is untouched. */
+html[data-pih-theme="new-web"] {
+  color-scheme: dark;
+  --background: #171816; --foreground: #F4F4F0; --card: #292A27; --card-foreground: #F4F4F0; --popover: #30312E; --popover-foreground: #F4F4F0;
+  --primary: #78FAAE; --primary-foreground: #102019; --secondary: #343531; --secondary-foreground: #F4F4F0; --muted: #30312E; --muted-foreground: #C4C6C0; --accent: #343531; --accent-foreground: #78FAAE; --border: #3B3D38; --input: #444640; --ring: #78FAAE;
+  --chart-1: #78FAAE; --chart-2: #B8F8D2; --chart-3: #AEB3AC; --chart-4: #5FCF8F; --chart-5: #62665F; --radius: 0.9rem;
+  --sidebar: #1D1E1B; --sidebar-foreground: #F4F4F0; --sidebar-primary: #78FAAE; --sidebar-primary-foreground: #102019; --sidebar-accent: #30312E; --sidebar-accent-foreground: #F4F4F0; --sidebar-border: #333530; --sidebar-ring: #78FAAE;
 }
+
+@layer base { * { @apply border-border outline-ring/50; } body { @apply bg-background text-foreground; } html { @apply font-sans; } }
+
+html[data-pih-theme="new-web"] body { background: radial-gradient(circle at 70% -10%, #292b28 0, #171816 36rem); }
+html[data-pih-theme="new-web"] .pih-topnav { background: rgba(23,24,22,.92); backdrop-filter: blur(16px); border-color: #30322e; }
+html[data-pih-theme="new-web"] .pih-sidebar { margin: 16px 0 16px 16px; height: calc(100vh - 32px); border: 1px solid #343632; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 50px rgba(0,0,0,.28); }
+html[data-pih-theme="new-web"] .pih-sidebar-brand { border-bottom: 1px solid #333530; }
+html[data-pih-theme="new-web"] .pih-main { padding-top: 2rem; }
+html[data-pih-theme="new-web"] .pih-brand-logo { border-radius: 4px; opacity: .92; }
+html[data-pih-theme="new-web"] .ci-switcher { background: #242522; border-color: #3a3c37; }
+
+/* Theme every existing shadcn/Tailwind surface so functionality stays identical across Dashboard, Markets, Initiatives, Meetings, Tasks, Risks, Reports, uploads and dialogs. */
+html[data-pih-theme="new-web"] :where(.bg-white) { background-color: #292A27 !important; }
+html[data-pih-theme="new-web"] :where(.bg-gray-50,.bg-slate-50) { background-color: #242522 !important; }
+html[data-pih-theme="new-web"] :where(.text-gray-900,.text-slate-900) { color: #F4F4F0 !important; }
+html[data-pih-theme="new-web"] :where(.text-gray-500,.text-gray-600,.text-slate-500,.text-slate-600) { color: #C4C6C0 !important; }
+html[data-pih-theme="new-web"] :where(input,textarea,select) { background-color: #242522; color: #F4F4F0; border-color: #444640; }
+html[data-pih-theme="new-web"] :where(table) { color: #F4F4F0; }
+html[data-pih-theme="new-web"] :where(thead) { background: #242522; }
+html[data-pih-theme="new-web"] :where([role="dialog"]) { background-color: #292A27; color: #F4F4F0; border-color: #3B3D38; }
+html[data-pih-theme="new-web"] :where(.shadow-sm,.shadow,.shadow-md,.shadow-lg) { box-shadow: 0 16px 44px rgba(0,0,0,.22); }

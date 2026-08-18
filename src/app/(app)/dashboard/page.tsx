@@ -5,6 +5,7 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { StatusOverview } from "@/components/dashboard/status-overview";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
 import { UpcomingMeetings } from "@/components/dashboard/upcoming-meetings";
+import { MilestoneHeatmap } from "@/components/dashboard/milestone-heatmap";
 
 export default async function DashboardPage() {
   const [markets, initiatives, openTasksCount, openRisksCount, activities, upcomingMeetings] = await Promise.all([
@@ -19,6 +20,7 @@ export default async function DashboardPage() {
       <KpiCard label="Open Tasks" value={openTasksCount} icon={ListChecks} hint="Not yet completed" />
       <KpiCard label="Open Risks" value={openRisksCount} icon={ShieldAlert} tone={openRisksCount > 0 ? "critical" : "default"} hint="Requiring mitigation" />
     </div>
+    <div className="mt-6"><MilestoneHeatmap markets={markets.map(m=>({id:m.id,name:m.name,milestoneCompleted:m.milestoneCompleted}))} /></div>
     <div className="pih-bento-primary mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2"><StatusOverview title="Markets" href="/markets" items={markets} /><StatusOverview title="Initiatives" href="/initiatives" items={initiatives.map((i) => ({ ...i, code: i.code }))} /></div>
     <div className="pih-bento-secondary mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2"><ActivityTimeline items={activities} /><UpcomingMeetings items={upcomingMeetings.map((m) => ({ id:m.id,title:m.title,type:m.type,date:m.date,scopeLabel:m.scope === "MARKET" ? (m.market?.name ?? "Market") : (m.initiative?.name ?? "Initiative") }))} /></div>
   </div>;

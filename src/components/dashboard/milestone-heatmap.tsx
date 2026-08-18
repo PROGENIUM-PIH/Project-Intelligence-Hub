@@ -1,4 +1,8 @@
-import { Check } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Check, RefreshCw } from "lucide-react";
 
 const milestones = [
   "Implementation done",
@@ -13,8 +17,12 @@ const milestoneProgressIndex = [4,3,2,1,0] as const;
 type Market = { id:string; name:string; milestoneCompleted:number };
 
 export function MilestoneHeatmap({markets}:{markets:Market[]}){
+  const router=useRouter();
+  const [refreshing,setRefreshing]=useState(false);
+  const refresh=()=>{setRefreshing(true);router.refresh();window.setTimeout(()=>setRefreshing(false),700)};
+
   return <section className="rounded-xl border bg-card p-5">
-    <div className="mb-4"><h2 className="text-base font-semibold">Milestone Heatmap</h2><p className="mt-1 text-xs text-muted-foreground">Implementation progress across markets</p></div>
+    <div className="mb-4 flex items-start justify-between gap-3"><div><h2 className="text-base font-semibold">Milestone Heatmap</h2><p className="mt-1 text-xs text-muted-foreground">Implementation progress across markets</p></div><button type="button" onClick={refresh} disabled={refreshing} className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#0E3A2F]/30 bg-background px-3 text-xs font-semibold text-[#0E3A2F] transition-all hover:border-[#78FAAE] hover:bg-[#78FAAE] disabled:cursor-wait disabled:opacity-70" title="Refresh milestone data"><RefreshCw className={`h-3.5 w-3.5 ${refreshing?"animate-spin":""}`}/><span>Refresh</span></button></div>
     <div className="overflow-x-auto pb-1">
       <div className="grid min-w-[760px] gap-1" style={{gridTemplateColumns:`190px repeat(${markets.length}, minmax(64px,1fr))`}}>
         {milestones.map((milestone,row)=>[

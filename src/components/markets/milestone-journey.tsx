@@ -19,7 +19,7 @@ export function MilestoneJourney({marketId,marketName,autoCompleted=0,savedCompl
   const [saving,setSaving]=useState(false); const [error,setError]=useState("");
   const completed=Math.max(autoCompleted,manualCompleted);
   const currentIndex=completed>=milestones.length?milestones.length-1:completed;
-  const currentLabel=completed>=milestones.length?"Implementation done":milestones[currentIndex];
+  const currentLabel=milestones[currentIndex];
   const progress=Math.round((completed/milestones.length)*100);
 
   const saveCompleted=async(value:number)=>{const next=Math.min(Math.max(value,autoCompleted),milestones.length);const previous=manualCompleted;setManualCompleted(next);setSaving(true);setError("");try{const response=await fetch(`/api/markets/${marketId}/milestones`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({completed:next})});if(!response.ok)throw new Error("Unable to save milestone progress.")}catch(err){setManualCompleted(previous);setError(err instanceof Error?err.message:"Unable to save milestone progress.")}finally{setSaving(false)}};
@@ -28,12 +28,12 @@ export function MilestoneJourney({marketId,marketName,autoCompleted=0,savedCompl
   return <div className="rounded-xl border p-4">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-sm font-semibold">{marketName}</p><p className="mt-1 text-xs text-muted-foreground">Current milestone: <span className="font-medium text-foreground">{currentLabel}</span> · {completed}/5 · {progress}%</p></div><span className="rounded-full bg-[#78FAAE] px-2.5 py-1 text-[11px] font-semibold text-[#0E3A2F]">{completed>=5?"Complete":"In progress"}</span></div>
     <div className="mt-5 grid grid-cols-5 gap-1">
-      {milestones.map((label,index)=>{const done=index<completed;const current=index===currentIndex&&completed<milestones.length;return <button disabled={saving} key={label} type="button" onClick={()=>saveCompleted(index+1)} className="group text-left disabled:cursor-wait" title={current?`Confirm ${label} as reached`:`Set ${label} as reached`}>
-        <div className={`mb-2 h-2 rounded-full border transition-all duration-200 ${done?"border-[#0E3A2F] bg-[#0E3A2F]":current?"border-[#78FAAE] bg-[#78FAAE] ring-2 ring-[#78FAAE]/35":"border-[#C9D1CD] bg-[#E3E9E6]"}`}/>
-        <div className={`text-[10px] leading-4 transition-colors ${current?"font-bold text-[#0E3A2F]":done?"font-semibold text-foreground":"text-muted-foreground"}`}>{done&&<Check className="mr-1 inline h-3 w-3"/>}{label}</div>
+      {milestones.map((label,index)=>{const done=completed>=milestones.length?index<currentIndex:index<completed;const current=index===currentIndex;return <button disabled={saving} key={label} type="button" onClick={()=>saveCompleted(index+1)} className="group text-left disabled:cursor-wait" title={current?`Confirm ${label} as reached`:`Set ${label} as reached`}>
+        <div className={`mb-2 h-2 rounded-full border transition-all duration-200 ${current?"border-[#78FAAE] bg-[#78FAAE] ring-2 ring-[#78FAAE]/35":done?"border-[#009B77] bg-[#009B77]":"border-[#C9D1CD] bg-[#E3E9E6]"}`}/>
+        <div className={`text-[10px] leading-4 transition-colors ${current?"font-bold text-[#0E3A2F]":done?"font-semibold text-[#007A5E]":"text-muted-foreground"}`}>{done&&<Check className="mr-1 inline h-3 w-3"/>}{label}</div>
       </button>})}
     </div>
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-3"><p className="text-[11px] text-muted-foreground">{sourceText}. <strong>Electric green = current milestone.</strong> Click the current milestone to complete it; the next milestone then becomes electric green.</p><div className="flex items-center gap-2">{saving&&<span className="flex items-center gap-1 text-[11px] text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin"/>Saving…</span>}{manualCompleted>autoCompleted&&<Button disabled={saving} type="button" variant="ghost" size="sm" onClick={()=>saveCompleted(autoCompleted)}>Reset manual status</Button>}</div></div>
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-3"><p className="text-[11px] text-muted-foreground">{sourceText}. <strong>Electric green = where the market is now.</strong> Emerald + ✓ = previously completed. Grey = upcoming. Click the electric-green milestone to complete it and move the highlight forward.</p><div className="flex items-center gap-2">{saving&&<span className="flex items-center gap-1 text-[11px] text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin"/>Saving…</span>}{manualCompleted>autoCompleted&&<Button disabled={saving} type="button" variant="ghost" size="sm" onClick={()=>saveCompleted(autoCompleted)}>Reset manual status</Button>}</div></div>
     {error&&<p className="mt-2 text-xs text-destructive">{error}</p>}
   </div>;
 }

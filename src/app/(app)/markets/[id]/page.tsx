@@ -9,8 +9,8 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { MilestoneJourney } from "@/components/markets/milestone-journey";
 import { healthTone,meetingTypeLabel } from "@/lib/status";
 
-function detectedMeetingMilestones(meetings:{title:string;notes:string;date:Date}[], initiativeCode:string){
-  const relevant=meetings.filter(m=>m.date<=new Date()&&`${m.title} ${m.notes}`.toLowerCase().includes(initiativeCode.toLowerCase()));
+function detectedMarketMilestones(meetings:{title:string;notes:string;date:Date}[]){
+  const relevant=meetings.filter(m=>m.date<=new Date());
   const onboarding=relevant.some(m=>/onboard|kick.?off/.test(`${m.title} ${m.notes}`.toLowerCase()));
   const followup=relevant.some(m=>/1:1|1-1|follow.?up|follow up/.test(`${m.title} ${m.notes}`.toLowerCase()));
   return followup?2:onboarding?1:0;
@@ -23,7 +23,7 @@ export default async function MarketDetailPage({params}:{params:Promise<{id:stri
   const {label,tone}=healthTone(market.status);
   return <div>
     <PageHeader title={market.name} description={`${market.region} · Market Lead: ${market.lead}`} actions={<StatusBadge label={label} tone={tone}/>}/>
-    <Card className="mb-4"><CardHeader><CardTitle className="text-base">Implementation Milestones</CardTitle></CardHeader><CardContent className="space-y-4">{market.initiatives.map(mi=><MilestoneJourney key={mi.id} marketInitiativeId={mi.id} initiativeCode={mi.initiative.code} initiativeName={mi.initiative.name} autoCompleted={detectedMeetingMilestones(market.meetings,mi.initiative.code)}/>)}</CardContent></Card>
+    <Card className="mb-4"><CardHeader><CardTitle className="text-base">Implementation Milestones</CardTitle></CardHeader><CardContent><MilestoneJourney marketId={market.id} marketName={market.name} autoCompleted={detectedMarketMilestones(market.meetings)}/></CardContent></Card>
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <Card><CardHeader><CardTitle className="text-base">Linked Initiatives</CardTitle></CardHeader><CardContent className="space-y-3">{market.initiatives.map(mi=><Link key={mi.id} href={`/initiatives/${mi.initiativeId}`} className="block rounded-lg border p-3"><p className="text-sm font-medium">{mi.initiative.code} · {mi.initiative.name}</p><p className="text-xs text-muted-foreground">Local lead: {mi.localLead}</p></Link>)}</CardContent></Card>
       <Card><CardHeader><CardTitle className="text-base">Documents ({market.documents.length})</CardTitle></CardHeader><CardContent className="space-y-3">{market.documents.length===0&&<p className="text-sm text-muted-foreground">No documents uploaded yet.</p>}{market.documents.map(d=><div key={d.id} className="flex items-center justify-between gap-3 rounded-lg border p-3"><div className="min-w-0"><p className="flex items-center gap-2 truncate text-sm font-medium"><FileText className="h-4 w-4"/>{d.name}</p><p className="text-xs text-muted-foreground">Uploaded {format(d.createdAt,"MMM d, yyyy")} · {(d.size/1024/1024).toFixed(2)} MB</p></div><a className="text-sm font-medium underline" target="_blank" rel="noreferrer" href={`/api/documents/file?pathname=${encodeURIComponent(d.pathname)}`}>Open</a></div>)}</CardContent></Card>

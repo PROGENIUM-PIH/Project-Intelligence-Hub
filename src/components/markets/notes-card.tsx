@@ -60,7 +60,7 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
       {summary&&<div className="rounded-lg border border-[#78FAAE] bg-[#78FAAE]/10 p-4">
         <p className="mb-3 text-sm font-semibold">Current Status</p>
         <div className="whitespace-pre-wrap text-sm leading-6">{summary}</div>
-        <p className="mt-3 text-xs text-muted-foreground">AI-generated from the full note history. Newer notes are instructed to take precedence over older, conflicting information.</p>
+        <p className="mt-3 text-xs text-muted-foreground">Rule-based summary from the note history. Latest initiative updates are combined with explicitly mentioned open points, decisions and risks.</p>
       </div>}
 
       <div className="max-h-72 space-y-2 overflow-y-auto pr-2">

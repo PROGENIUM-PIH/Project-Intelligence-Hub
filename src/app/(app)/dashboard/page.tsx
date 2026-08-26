@@ -23,7 +23,7 @@ export default async function DashboardPage() {
   const atRiskCount = initiatives.filter((i) => i.status !== "ON_TRACK").length + markets.filter((m) => m.status !== "ON_TRACK").length;
   const heatmapMarkets=markets.map(m=>({id:m.id,name:m.name,milestoneCompleted:m.milestoneCompleted>0?m.milestoneCompleted:detectedMarketMilestones(m.meetings)}));
   return <div className="pih-dashboard">
-    <div className="pih-dashboard-hero"><PageHeader title="Dashboard" description="Program-wide overview of the sales transformation initiative." /></div>
+    <div className="pih-dashboard-hero"><PageHeader title="Dashboard – Vincent Test" description="Program-wide overview of the sales transformation initiative." /></div>
     <div className="pih-kpi-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <KpiCard label="Active Initiatives" value={initiatives.length} icon={Target} hint="Across all markets" />
       <KpiCard label="At Risk / Critical" value={atRiskCount} icon={AlertTriangle} tone={atRiskCount > 0 ? "warning" : "default"} hint="Markets & initiatives" />

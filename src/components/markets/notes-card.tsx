@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -16,22 +16,24 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
   const [initiativeId, setInitiativeId] = useState(initiatives[0]?.id ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [showSummary, setShowSummary] = useState(false);
-
-  const currentSummary = useMemo(() => {
-    const latestByInitiative = new Map<string, Note>();
-    for (const note of notes) {
-      if (!latestByInitiative.has(note.initiative.id)) latestByInitiative.set(note.initiative.id, note);
-    }
-    return Array.from(latestByInitiative.values());
-  }, [notes]);
+  const [summary, setSummary] = useState("");
+  const [summaryError, setSummaryError] = useState("");
+  const [summarizing, setSummarizing] = useState(false);
 
   async function saveNote() {
     if (!content.trim() || !initiativeId) return;
     setSaving(true); setError("");
     const response = await fetch("/api/notes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content, marketId, initiativeId }) });
     if (!response.ok) { const data = await response.json().catch(() => ({})); setError(data.error ?? "Could not save note."); setSaving(false); return; }
-    setContent(""); setSaving(false); setShowSummary(false); router.refresh();
+    setContent(""); setSaving(false); setSummary(""); setSummaryError(""); router.refresh();
+  }
+
+  async function summarizeCurrentStatus() {
+    setSummarizing(true); setSummaryError("");
+    const response = await fetch("/api/notes/summary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ marketId }) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) { setSummaryError(data.error ?? "Could not summarize notes."); setSummarizing(false); return; }
+    setSummary(data.summary ?? ""); setSummarizing(false);
   }
 
   return <Card>
@@ -49,19 +51,16 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
         {error&&<p className="text-xs text-destructive">{error}</p>}
       </div>
 
-      <Button className="w-full bg-[#78FAAE] text-[#0D3B32] hover:bg-[#78FAAE]/90" onClick={()=>setShowSummary(v=>!v)} disabled={notes.length===0}>
-        <Sparkles className="h-4 w-4"/>{showSummary ? "Hide Current Status" : "Summarize Current Status"}
+      <Button className="w-full bg-[#78FAAE] text-[#0D3B32] hover:bg-[#78FAAE]/90" onClick={summarizeCurrentStatus} disabled={notes.length===0 || summarizing}>
+        {summarizing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Sparkles className="h-4 w-4"/>}
+        {summarizing ? "Summarizing..." : "Summarize Current Status"}
       </Button>
 
-      {showSummary&&<div className="rounded-lg border border-[#78FAAE] bg-[#78FAAE]/10 p-4">
+      {summaryError&&<div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{summaryError}</div>}
+      {summary&&<div className="rounded-lg border border-[#78FAAE] bg-[#78FAAE]/10 p-4">
         <p className="mb-3 text-sm font-semibold">Current Status</p>
-        <div className="space-y-3">
-          {currentSummary.map(note=><div key={note.id}>
-            <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-semibold">{note.initiative.code} · {note.initiative.name}</p><p className="text-xs text-muted-foreground">Latest update {format(new Date(note.createdAt), "MMM d, yyyy")}</p></div>
-            <p className="mt-1 whitespace-pre-wrap text-sm">{note.content}</p>
-          </div>)}
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">Shows the latest note for each initiative in this market.</p>
+        <div className="whitespace-pre-wrap text-sm leading-6">{summary}</div>
+        <p className="mt-3 text-xs text-muted-foreground">AI-generated from the full note history. Newer notes are instructed to take precedence over older, conflicting information.</p>
       </div>}
 
       <div className="max-h-72 space-y-2 overflow-y-auto pr-2">

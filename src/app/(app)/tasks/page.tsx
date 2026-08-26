@@ -3,13 +3,20 @@ import { PageHeader } from "@/components/shared/page-header";
 import { TasksClient } from "@/components/tasks/tasks-client";
 
 export default async function TasksPage() {
-  const [tasks, initiatives] = await Promise.all([
+  const [tasks, initiatives, markets] = await Promise.all([
     prisma.task.findMany({
       orderBy: { dueDate: "asc" },
-      include: { initiative: { select: { id: true, code: true, name: true } } },
+      include: {
+        initiative: { select: { id: true, code: true, name: true } },
+        market: { select: { id: true, code: true, name: true } },
+      },
     }),
     prisma.initiative.findMany({
       orderBy: { code: "asc" },
+      select: { id: true, code: true, name: true },
+    }),
+    prisma.market.findMany({
+      orderBy: { name: "asc" },
       select: { id: true, code: true, name: true },
     }),
   ]);
@@ -18,9 +25,9 @@ export default async function TasksPage() {
     <div>
       <PageHeader
         title="Tasks"
-        description="Track execution work across every initiative."
+        description="Track execution work across markets and initiatives."
       />
-      <TasksClient tasks={tasks} initiatives={initiatives} />
+      <TasksClient tasks={tasks} initiatives={initiatives} markets={markets} />
     </div>
   );
 }

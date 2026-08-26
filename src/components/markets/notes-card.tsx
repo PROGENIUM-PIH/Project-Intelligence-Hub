@@ -36,16 +36,16 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
     setSummary(data.summary ?? ""); setSummarizing(false);
   }
 
-  return <Card>
+  return <Card className="min-w-0 overflow-visible">
     <CardHeader><CardTitle className="text-base">Notes</CardTitle></CardHeader>
-    <CardContent className="space-y-4">
+    <CardContent className="space-y-4 overflow-visible">
       <div className="space-y-3 rounded-lg border p-3">
         <textarea value={content} onChange={(e)=>setContent(e.target.value)} placeholder="Add a note for this market..." rows={4} className="w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <select value={initiativeId} onChange={(e)=>setInitiativeId(e.target.value)} className="h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm">
+        <div className="grid grid-cols-1 gap-2 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
+          <select value={initiativeId} onChange={(e)=>setInitiativeId(e.target.value)} className="h-10 min-w-0 w-full rounded-md border border-input bg-background px-3 text-sm">
             {initiatives.map(i=><option key={i.id} value={i.id}>{i.code} · {i.name}</option>)}
           </select>
-          <Button onClick={saveNote} disabled={saving || !content.trim() || !initiativeId}>{saving ? "Saving..." : "Save Note"}</Button>
+          <Button className="h-10 w-full whitespace-nowrap xl:w-auto xl:min-w-28" onClick={saveNote} disabled={saving || !content.trim() || !initiativeId}>{saving ? "Saving..." : "Save Note"}</Button>
         </div>
         {initiatives.length===0&&<p className="text-xs text-muted-foreground">No initiatives available.</p>}
         {error&&<p className="text-xs text-destructive">{error}</p>}

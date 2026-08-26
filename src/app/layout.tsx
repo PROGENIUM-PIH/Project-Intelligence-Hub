@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Project Intelligence Hub",
+  title: "RISE Hub",
   description:
     "Program management hub for the global automotive sales transformation initiative.",
 };

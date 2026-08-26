@@ -20,7 +20,7 @@ export function DocumentsList({ documents }: { documents: DocumentItem[] }) {
   const [error, setError] = useState("");
 
   async function deleteDocument(document: DocumentItem) {
-    const confirmed = window.confirm(`Delete \"${document.name}\" permanently?`);
+    const confirmed = window.confirm(`Delete "${document.name}" permanently?`);
     if (!confirmed) return;
 
     setDeletingId(document.id);
@@ -44,18 +44,21 @@ export function DocumentsList({ documents }: { documents: DocumentItem[] }) {
 
   return <div className="space-y-3">
     {documents.length === 0 && <p className="text-sm text-muted-foreground">No documents uploaded yet.</p>}
-    {documents.map((document) => <div key={document.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
-      <div className="min-w-0">
-        <p className="flex items-center gap-2 truncate text-sm font-medium"><FileText className="h-4 w-4" />{document.name}</p>
-        <p className="text-xs text-muted-foreground">Uploaded {format(new Date(document.createdAt), "MMM d, yyyy")} · {(document.size / 1024 / 1024).toFixed(2)} MB</p>
-      </div>
-      <div className="flex items-center gap-2">
-        <a className="text-sm font-medium underline" target="_blank" rel="noreferrer" href={`/api/documents/file?pathname=${encodeURIComponent(document.pathname)}`}>Open</a>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => deleteDocument(document)} disabled={deletingId === document.id} aria-label={`Delete ${document.name}`}>
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>)}
+    {documents.map((document) => {
+      const createdAt = typeof document.createdAt === "string" ? new Date(document.createdAt) : document.createdAt;
+      return <div key={document.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 truncate text-sm font-medium"><FileText className="h-4 w-4" />{document.name}</p>
+          <p className="text-xs text-muted-foreground">Uploaded {format(createdAt, "MMM d, yyyy")} · {(document.size / 1024 / 1024).toFixed(2)} MB</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <a className="text-sm font-medium underline" target="_blank" rel="noreferrer" href={`/api/documents/file?pathname=${encodeURIComponent(document.pathname)}`}>Open</a>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => deleteDocument(document)} disabled={deletingId === document.id} aria-label={`Delete ${document.name}`} title="Delete document">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>;
+    })}
     {error && <p className="text-xs text-destructive">{error}</p>}
   </div>;
 }

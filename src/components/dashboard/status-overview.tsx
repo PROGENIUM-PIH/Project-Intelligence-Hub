@@ -28,7 +28,7 @@ export function StatusOverview({ title, href, items }: { title: string; href: st
         <CardTitle className="text-base">{title}</CardTitle>
         <Link href={href} className="pih-inline-action flex items-center gap-1 text-xs font-medium text-primary">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
       </CardHeader>
-      <CardContent className="pih-overview-scroll min-h-0 flex-1 space-y-1 overflow-y-auto pr-3">
+      <CardContent className="pih-overview-scroll min-h-0 flex-1 space-y-1 overflow-y-scroll pr-3 [scrollbar-gutter:stable]">
         {items.map((item) => {
           const { label, tone } = healthTone(item.status);
           const flagSrc = isMarkets ? marketFlagFiles[item.name.trim().toLowerCase()] : undefined;

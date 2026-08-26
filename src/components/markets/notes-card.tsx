@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -15,13 +16,22 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
   const [initiativeId, setInitiativeId] = useState(initiatives[0]?.id ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [showSummary, setShowSummary] = useState(false);
+
+  const currentSummary = useMemo(() => {
+    const latestByInitiative = new Map<string, Note>();
+    for (const note of notes) {
+      if (!latestByInitiative.has(note.initiative.id)) latestByInitiative.set(note.initiative.id, note);
+    }
+    return Array.from(latestByInitiative.values());
+  }, [notes]);
 
   async function saveNote() {
     if (!content.trim() || !initiativeId) return;
     setSaving(true); setError("");
     const response = await fetch("/api/notes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content, marketId, initiativeId }) });
     if (!response.ok) { const data = await response.json().catch(() => ({})); setError(data.error ?? "Could not save note."); setSaving(false); return; }
-    setContent(""); setSaving(false); router.refresh();
+    setContent(""); setSaving(false); setShowSummary(false); router.refresh();
   }
 
   return <Card>
@@ -35,9 +45,25 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
           </select>
           <Button onClick={saveNote} disabled={saving || !content.trim() || !initiativeId}>{saving ? "Saving..." : "Save Note"}</Button>
         </div>
-        {initiatives.length===0&&<p className="text-xs text-muted-foreground">Link an initiative to this market before adding notes.</p>}
+        {initiatives.length===0&&<p className="text-xs text-muted-foreground">No initiatives available.</p>}
         {error&&<p className="text-xs text-destructive">{error}</p>}
       </div>
+
+      <Button className="w-full bg-[#78FAAE] text-[#0D3B32] hover:bg-[#78FAAE]/90" onClick={()=>setShowSummary(v=>!v)} disabled={notes.length===0}>
+        <Sparkles className="h-4 w-4"/>{showSummary ? "Hide Current Status" : "Summarize Current Status"}
+      </Button>
+
+      {showSummary&&<div className="rounded-lg border border-[#78FAAE] bg-[#78FAAE]/10 p-4">
+        <p className="mb-3 text-sm font-semibold">Current Status</p>
+        <div className="space-y-3">
+          {currentSummary.map(note=><div key={note.id}>
+            <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-semibold">{note.initiative.code} · {note.initiative.name}</p><p className="text-xs text-muted-foreground">Latest update {format(new Date(note.createdAt), "MMM d, yyyy")}</p></div>
+            <p className="mt-1 whitespace-pre-wrap text-sm">{note.content}</p>
+          </div>)}
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">Shows the latest note for each initiative in this market.</p>
+      </div>}
+
       <div className="max-h-72 space-y-2 overflow-y-auto pr-2">
         {notes.length===0&&<p className="text-sm text-muted-foreground">No notes added yet.</p>}
         {notes.map(note=><div key={note.id} className="rounded-lg border p-3"><div className="mb-1 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-medium">{note.initiative.code} · {note.initiative.name}</p><p className="text-xs text-muted-foreground">{format(new Date(note.createdAt), "MMM d, yyyy · HH:mm")}</p></div><p className="whitespace-pre-wrap text-sm">{note.content}</p></div>)}

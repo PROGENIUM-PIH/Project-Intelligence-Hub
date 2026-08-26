@@ -21,7 +21,6 @@ const marketFlagFiles: Record<string, string> = {
 };
 
 export function StatusOverview({ title, href, items }: { title: string; href: string; items: Entity[] }) {
-  const isInitiatives = title === "Initiatives";
   const isMarkets = title === "Markets";
   return (
     <Card className="pih-module-card pih-status-overview flex h-[430px] flex-col">
@@ -29,7 +28,7 @@ export function StatusOverview({ title, href, items }: { title: string; href: st
         <CardTitle className="text-base">{title}</CardTitle>
         <Link href={href} className="pih-inline-action flex items-center gap-1 text-xs font-medium text-primary">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
       </CardHeader>
-      <CardContent className={`min-h-0 flex-1 space-y-1 pr-3 ${isInitiatives ? "pih-overview-scroll overflow-y-auto" : "overflow-hidden"}`}>
+      <CardContent className="pih-overview-scroll min-h-0 flex-1 space-y-1 overflow-y-auto pr-3">
         {items.map((item) => {
           const { label, tone } = healthTone(item.status);
           const flagSrc = isMarkets ? marketFlagFiles[item.name.trim().toLowerCase()] : undefined;

@@ -36,7 +36,7 @@ export function MarketOwnerCard({ marketId, owner }: { marketId: string; owner: 
   return <Card className="h-full"><CardContent className="p-3">
     <div className="flex items-center justify-between gap-2">
       <p className="text-xs text-muted-foreground">Market Owner</p>
-      <button type="button" onClick={() => { setEditing((v) => !v); setValue(owner); setError(""); }} className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground" aria-label="Edit market owner">
+      <button type="button" onClick={() => { setEditing((v) => !v); setValue(owner); setError(""); }} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-secondary" aria-label="Edit market owner" title="Edit market owner">
         {editing ? <X className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
       </button>
     </div>

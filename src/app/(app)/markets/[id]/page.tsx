@@ -8,6 +8,7 @@ import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { MilestoneJourney } from "@/components/markets/milestone-journey";
 import { NotesCard } from "@/components/markets/notes-card";
+import { MarketOwnerCard } from "@/components/markets/market-owner-card";
 import { TasksClient } from "@/components/tasks/tasks-client";
 import { healthTone,meetingTypeLabel } from "@/lib/status";
 
@@ -36,10 +37,10 @@ export default async function MarketDetailPage({params}:{params:Promise<{id:stri
       <PageHeader title={market.name} description={`${market.region} · Market Lead: ${market.lead}`} actions={<><Link href={`/reports/management?marketId=${market.id}`} className="inline-flex h-9 items-center justify-center rounded-md bg-[#78FAAE] px-4 text-sm font-semibold text-[#0D3B32] transition-colors hover:bg-[#78FAAE]/90">Report</Link><StatusBadge label={label} tone={tone}/></>}/>
 
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Overall Status</p><div className="mt-2"><StatusBadge label={label} tone={tone}/></div><p className="mt-2 text-xs text-muted-foreground">Manual · AI recommendation planned</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Market Owner</p><p className="mt-2 text-sm font-semibold">{market.lead}</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Last Update</p><p className="mt-2 text-sm font-semibold">{format(lastUpdate,"MMM d, yyyy · HH:mm")}</p><p className="mt-2 text-xs text-muted-foreground">Updated automatically from market activity</p></CardContent></Card>
-        <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Next Key Date</p><p className="mt-2 text-sm font-semibold">{nextTask?format(nextTask.dueDate,"MMM d, yyyy"):"Not set"}</p><p className="mt-2 truncate text-xs text-muted-foreground">{nextTask?.title??"Reserved for key market deadline"}</p></CardContent></Card>
+        <Card className="h-full"><CardContent className="p-3"><p className="text-xs text-muted-foreground">Overall Status</p><div className="mt-1.5"><StatusBadge label={label} tone={tone}/></div><p className="mt-1.5 text-[11px] leading-4 text-muted-foreground">Manual · AI recommendation planned</p></CardContent></Card>
+        <MarketOwnerCard marketId={market.id} owner={market.lead}/>
+        <Card className="h-full"><CardContent className="p-3"><p className="text-xs text-muted-foreground">Last Update</p><p className="mt-1.5 text-sm font-semibold">{format(lastUpdate,"MMM d, yyyy · HH:mm")}</p><p className="mt-1.5 text-[11px] leading-4 text-muted-foreground">Updated automatically from market activity</p></CardContent></Card>
+        <Card className="h-full"><CardContent className="p-3"><p className="text-xs text-muted-foreground">Next Key Date</p><p className="mt-1.5 text-sm font-semibold">{nextTask?format(nextTask.dueDate,"MMM d, yyyy"):"Not set"}</p><p className="mt-1.5 truncate text-[11px] leading-4 text-muted-foreground">{nextTask?.title??"Reserved for key market deadline"}</p></CardContent></Card>
       </div>
 
       <Card className="mb-4 border-dashed"><CardHeader><CardTitle className="text-base">Current Market Status</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground">Reserved for Chatty: consolidated market summary from Notes, Tasks, Meetings, Data Intake, Documents and linked Initiatives.</p><div className="mt-4 grid gap-3 md:grid-cols-3"><div className="rounded-lg border p-3"><p className="text-xs font-semibold">Progress</p><p className="mt-1 text-xs text-muted-foreground">AI-generated progress summary</p></div><div className="rounded-lg border p-3"><p className="text-xs font-semibold">Attention Required</p><p className="mt-1 text-xs text-muted-foreground">AI-generated open points and risks</p></div><div className="rounded-lg border p-3"><p className="text-xs font-semibold">Next Steps</p><p className="mt-1 text-xs text-muted-foreground">AI-generated recommended next actions</p></div></div></CardContent></Card>

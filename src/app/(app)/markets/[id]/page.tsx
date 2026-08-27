@@ -33,7 +33,7 @@ export default async function MarketDetailPage({params}:{params:Promise<{id:stri
     const lastUpdate=new Date(Math.max(...activityDates.map(d=>new Date(d).getTime())));
     const nextTask=market.tasks.find(t=>t.status!=="DONE"&&new Date(t.dueDate)>=new Date());
     return <div>
-      <PageHeader title={market.name} description={`${market.region} · Market Lead: ${market.lead}`} actions={<StatusBadge label={label} tone={tone}/>}/>
+      <PageHeader title={market.name} description={`${market.region} · Market Lead: ${market.lead}`} actions={<><Link href={`/reports/management?marketId=${market.id}`} className="inline-flex h-9 items-center justify-center rounded-md bg-[#78FAAE] px-4 text-sm font-semibold text-[#0D3B32] transition-colors hover:bg-[#78FAAE]/90">Report</Link><StatusBadge label={label} tone={tone}/></>}/>
 
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Overall Status</p><div className="mt-2"><StatusBadge label={label} tone={tone}/></div><p className="mt-2 text-xs text-muted-foreground">Manual · AI recommendation planned</p></CardContent></Card>

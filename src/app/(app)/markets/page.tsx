@@ -17,6 +17,11 @@ const marketFlagImages: Record<string, string> = {
   netherlands: "/flags/netherlands.svg",
   uk: "/flags/uk.svg",
   "united kingdom": "/flags/uk.svg",
+  ireland: "/flags/ireland.png.png",
+  italy: "/flags/italy.png.png",
+  sweden: "/flags/sweden.png.png",
+  slovakia: "/flags/slovakia.png.png",
+  belgium: "/flags/belgium.png.png",
 };
 
 export default async function MarketsPage() {

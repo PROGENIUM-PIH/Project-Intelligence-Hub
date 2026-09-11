@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/shared/page-header";
 import { DocumentsList } from "@/components/shared/documents-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -47,11 +46,19 @@ export default async function MarketDetailPage({ params }: { params: Promise<{ i
   const upcomingMeetings = market.meetings.filter((m) => m.date >= new Date()).sort((a, b) => a.date.getTime() - b.date.getTime());
 
   return <div>
-    <PageHeader
-      title={market.name}
-      description={`${market.region} · Market Lead: ${market.lead}`}
-      actions={<div className="flex flex-wrap items-center gap-2"><MarketMeetingButton market={{ id: market.id, code: market.code, name: market.name }} /><MarketInput market={{ id: market.id, code: market.code, name: market.name }} /><StatusBadge label={label} tone={tone} /></div>}
-    />
+    <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{market.name}</h1>
+          <StatusBadge label={label} tone={tone} />
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">{market.region} · Market Lead: {market.lead}</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <MarketMeetingButton market={{ id: market.id, code: market.code, name: market.name }} />
+        <MarketInput market={{ id: market.id, code: market.code, name: market.name }} />
+      </div>
+    </div>
 
     <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
       <Card><CardContent className="p-3"><p className="text-xs text-muted-foreground">Linked initiatives</p><p className="mt-1 text-2xl font-semibold">{activeLocal}</p><p className="text-[11px] text-muted-foreground">in local implementation</p></CardContent></Card>

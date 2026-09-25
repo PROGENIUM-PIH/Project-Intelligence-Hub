@@ -72,6 +72,7 @@ model Market {
   documents   Document[]
   notes       Note[]
   tasks       Task[]
+  contacts    MarketContact[]
 }
 
 model Initiative {
@@ -94,6 +95,40 @@ model Initiative {
   meetings  Meeting[]
   documents Document[]
   notes     Note[]
+  contacts  InitiativeContact[]
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  markets     MarketContact[]
+  initiatives InitiativeContact[]
+}
+
+model MarketContact {
+  marketId  String
+  contactId String
+
+  market  Market  @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@id([marketId, contactId])
+}
+
+model InitiativeContact {
+  initiativeId String
+  contactId    String
+
+  initiative Initiative @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
+  contact    Contact    @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@id([initiativeId, contactId])
 }
 
 model Document {

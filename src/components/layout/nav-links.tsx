@@ -7,7 +7,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItems } from "./nav-items";
 
-const hiddenHrefs = new Set(["/settings", "/meetings", "/tasks", "/risks"]);
+const hiddenHrefs = new Set(["/settings", "/meetings", "/risks"]);
 
 export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();

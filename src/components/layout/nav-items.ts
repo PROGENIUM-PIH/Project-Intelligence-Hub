@@ -18,9 +18,9 @@ export const navItems: NavItem[] = [
   { href: "/updates", label: "Data Intake", icon: Inbox },
   { href: "/markets", label: "Market Steering", icon: Globe },
   { href: "/initiatives", label: "Initiatives", icon: Target },
-  { href: "/meetings", label: "Meetings", icon: CalendarDays },
-  { href: "/tasks", label: "Tasks", icon: ListChecks },
-  { href: "/risks", label: "Risks", icon: ShieldAlert },
+  { href: "/tasks", label: "Task Tracker", icon: ListChecks },
   { href: "/reports", label: "Reports", icon: FileSpreadsheet },
+  { href: "/meetings", label: "Meetings", icon: CalendarDays },
+  { href: "/risks", label: "Risks", icon: ShieldAlert },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

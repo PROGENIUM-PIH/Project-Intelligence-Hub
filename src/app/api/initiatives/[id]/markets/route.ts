@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { recalculateMarketStatus } from "@/lib/actions/market-initiatives";
 
 const validStatuses = new Set(["ON_TRACK", "AT_RISK", "CRITICAL"]);
 
@@ -17,6 +18,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       data: { initiativeId, marketId, localLead, localStatus: localStatus as "ON_TRACK" | "AT_RISK" | "CRITICAL" },
       include: { market: true },
     });
+    await recalculateMarketStatus(marketId);
     return NextResponse.json(link, { status: 201 });
   } catch (error) {
     const message = error instanceof Error && error.message.includes("Unique constraint") ? "This market is already linked." : "Could not link market.";

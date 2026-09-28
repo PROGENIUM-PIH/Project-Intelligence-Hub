@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from "@/components/ui/select";
 import { createMeeting, updateMeeting } from "@/lib/actions/meetings";
 
-const formSchema=z.object({title:z.string().min(3,"Title is required"),type:z.enum(["STATUS_REVIEW","STEERING_COMMITTEE","WORKSHOP","KICKOFF","OTHER"]),scope:z.enum(["MARKET","INITIATIVE"]),date:z.string().min(1,"Date is required"),notes:z.string().default(""),participants:z.string().optional(),location:z.string().optional(),documentUrl:z.string().optional(),marketId:z.string().optional(),initiativeId:z.string().optional()});
+const formSchema=z.object({title:z.string().min(3,"Title is required"),type:z.enum(["STATUS_REVIEW","STEERING_COMMITTEE","WORKSHOP","KICKOFF","OTHER"]),scope:z.enum(["MARKET","INITIATIVE"]),date:z.string().min(1,"Date is required"),notes:z.string(),participants:z.string().optional(),location:z.string().optional(),documentUrl:z.string().optional(),marketId:z.string().optional(),initiativeId:z.string().optional()});
 type FormValues=z.infer<typeof formSchema>;
 type Props={markets:{id:string;code:string;name:string}[];initiatives:{id:string;code:string;name:string}[];meeting?:{id:string;title:string;type:string;scope:string;date:Date;notes:string;participants?:string|null;location?:string|null;documentUrl?:string|null;marketId:string|null;initiativeId:string|null};onSuccess:()=>void};
 

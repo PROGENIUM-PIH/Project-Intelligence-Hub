@@ -14,7 +14,10 @@ export function MarketMeetingButton({ market }: { market: Market }) {
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState(`${market.name} status review`);
   const [date, setDate] = useState("");
-  const [notes, setNotes] = useState("Agenda / notes to follow.");
+  const [notes, setNotes] = useState("");
+  const [participants, setParticipants] = useState("");
+  const [location, setLocation] = useState("");
+  const [documentUrl, setDocumentUrl] = useState("");
   const [error, setError] = useState("");
 
   async function save() {
@@ -22,7 +25,7 @@ export function MarketMeetingButton({ market }: { market: Market }) {
     setSaving(true);
     setError("");
     try {
-      await createMeeting({ title, type: "STATUS_REVIEW", scope: "MARKET", date: new Date(date), notes: notes.trim() || "Agenda / notes to follow.", marketId: market.id, initiativeId: null });
+      await createMeeting({ title, type: "STATUS_REVIEW", scope: "MARKET", date: new Date(date), notes: notes.trim(), participants: participants.trim(), location: location.trim(), documentUrl: documentUrl.trim(), marketId: market.id, initiativeId: null });
       setOpen(false);
       router.refresh();
     } catch {
@@ -39,7 +42,7 @@ export function MarketMeetingButton({ market }: { market: Market }) {
       <div className="space-y-4">
         <label className="grid gap-1.5 text-sm">Title<input className="h-10 rounded-md border bg-background px-3" value={title} onChange={(e) => setTitle(e.target.value)} /></label>
         <label className="grid gap-1.5 text-sm">Date & time<input type="datetime-local" className="h-10 rounded-md border bg-background px-3" value={date} onChange={(e) => setDate(e.target.value)} /></label>
-        <label className="grid gap-1.5 text-sm">Agenda / notes<textarea className="min-h-24 rounded-md border bg-background p-3" value={notes} onChange={(e) => setNotes(e.target.value)} /></label>
+        <div className="grid grid-cols-2 gap-3"><label className="grid gap-1.5 text-sm">Participants<input className="h-10 rounded-md border bg-background px-3" value={participants} onChange={(e) => setParticipants(e.target.value)} /></label><label className="grid gap-1.5 text-sm">Location<input className="h-10 rounded-md border bg-background px-3" value={location} onChange={(e) => setLocation(e.target.value)} /></label></div><label className="grid gap-1.5 text-sm">Meeting document<input className="h-10 rounded-md border bg-background px-3" placeholder="Document link" value={documentUrl} onChange={(e) => setDocumentUrl(e.target.value)} /></label><label className="grid gap-1.5 text-sm">Agenda / notes<textarea className="min-h-24 rounded-md border bg-background p-3" value={notes} onChange={(e) => setNotes(e.target.value)} /></label>
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         <div className="flex justify-end"><Button type="button" onClick={save} disabled={!date || saving}>{saving ? "Scheduling..." : "Schedule meeting"}</Button></div>
       </div>

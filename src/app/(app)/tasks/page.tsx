@@ -5,7 +5,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { TasksClient } from "@/components/tasks/tasks-client";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default async function TasksPage() {
+export default async function TasksPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  const { status } = await searchParams;
   const [tasks, initiatives, markets] = await Promise.all([
     prisma.task.findMany({
       orderBy: { dueDate: "asc" },
@@ -35,7 +36,7 @@ export default async function TasksPage() {
       />
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Link href="/tasks#tasks" className="group">
+        <Link href="/tasks?status=ACTIVE#tasks" className="group">
           <Card className="h-full transition-shadow group-hover:shadow-md">
             <CardContent className="flex items-center justify-between p-5">
               <div>
@@ -63,7 +64,7 @@ export default async function TasksPage() {
       </div>
 
       <div id="tasks">
-        <TasksClient tasks={tasks} initiatives={initiatives} markets={markets} />
+        <TasksClient tasks={tasks} initiatives={initiatives} markets={markets} initialStatus={status ?? "ALL"} />
       </div>
     </div>
   );

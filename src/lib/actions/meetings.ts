@@ -10,7 +10,10 @@ const meetingSchema = z
     type: z.enum(["STATUS_REVIEW", "STEERING_COMMITTEE", "WORKSHOP", "KICKOFF", "OTHER"]),
     scope: z.enum(["MARKET", "INITIATIVE"]),
     date: z.coerce.date(),
-    notes: z.string().min(1),
+    notes: z.string().default(""),
+    participants: z.string().optional().nullable(),
+    location: z.string().optional().nullable(),
+    documentUrl: z.string().optional().nullable(),
     marketId: z.string().optional().nullable(),
     initiativeId: z.string().optional().nullable(),
   })
@@ -39,7 +42,10 @@ function normalize(input: MeetingInput) {
     type: input.type,
     scope: input.scope,
     date: input.date,
-    notes: input.notes,
+    notes: input.notes || "",
+    participants: input.participants || null,
+    location: input.location || null,
+    documentUrl: input.documentUrl || null,
     marketId: input.scope === "MARKET" ? (input.marketId ?? null) : null,
     initiativeId: input.scope === "INITIATIVE" ? (input.initiativeId ?? null) : null,
   };
@@ -60,6 +66,8 @@ export async function createMeeting(input: MeetingInput) {
   });
   revalidatePath("/meetings");
   revalidatePath("/dashboard");
+  if (meeting.marketId) revalidatePath(`/markets/${meeting.marketId}`);
+  if (meeting.initiativeId) revalidatePath(`/initiatives/${meeting.initiativeId}`);
   return meeting;
 }
 
@@ -100,6 +108,8 @@ export async function updateMeeting(id: string, input: MeetingInput) {
   const meeting = await prisma.meeting.update({ where: { id }, data });
   revalidatePath("/meetings");
   revalidatePath("/dashboard");
+  if (meeting.marketId) revalidatePath(`/markets/${meeting.marketId}`);
+  if (meeting.initiativeId) revalidatePath(`/initiatives/${meeting.initiativeId}`);
   return meeting;
 }
 

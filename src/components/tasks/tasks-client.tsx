@@ -25,17 +25,18 @@ export type TaskRow = {
   initiative: ScopeOption | null; market: ScopeOption | null;
 };
 
-export function TasksClient({ tasks, initiatives, markets }: { tasks: TaskRow[]; initiatives: ScopeOption[]; markets: ScopeOption[] }) {
+export function TasksClient({ tasks, initiatives, markets, initialStatus="ALL" }: { tasks: TaskRow[]; initiatives: ScopeOption[]; markets: ScopeOption[]; initialStatus?: string }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [scopeFilter, setScopeFilter] = useState("ALL");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskRow | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<TaskRow | null>(null);
 
   const filtered = useMemo(() => tasks.filter((t) => {
-    if (statusFilter !== "ALL" && t.status !== statusFilter) return false;
+    if (statusFilter === "ACTIVE" && t.status === "DONE") return false;
+    if (statusFilter !== "ALL" && statusFilter !== "ACTIVE" && t.status !== statusFilter) return false;
     if (scopeFilter.startsWith("M:") && t.marketId !== scopeFilter.slice(2)) return false;
     if (scopeFilter.startsWith("I:") && t.initiativeId !== scopeFilter.slice(2)) return false;
     if (search && !`${t.title} ${t.market?.name ?? ""} ${t.initiative?.name ?? ""}`.toLowerCase().includes(search.toLowerCase())) return false;
@@ -54,7 +55,7 @@ export function TasksClient({ tasks, initiatives, markets }: { tasks: TaskRow[];
   return <div>
     <FilterBar className="mb-4 justify-between"><div className="flex flex-col gap-3 sm:flex-row sm:items-center">
       <SearchBar placeholder="Search tasks..." value={search} onChange={setSearch} className="w-full sm:w-64"/>
-      <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger className="w-full sm:w-40"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="ALL">All statuses</SelectItem><SelectItem value="TODO">To Do</SelectItem><SelectItem value="IN_PROGRESS">In Progress</SelectItem><SelectItem value="DONE">Done</SelectItem><SelectItem value="BLOCKED">Blocked</SelectItem></SelectContent></Select>
+      <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger className="w-full sm:w-40"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="ALL">All statuses</SelectItem><SelectItem value="ACTIVE">Active</SelectItem><SelectItem value="TODO">To Do</SelectItem><SelectItem value="IN_PROGRESS">In Progress</SelectItem><SelectItem value="DONE">Done</SelectItem><SelectItem value="BLOCKED">Blocked</SelectItem></SelectContent></Select>
       <Select value={scopeFilter} onValueChange={setScopeFilter}><SelectTrigger className="w-full sm:w-56"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="ALL">All markets & initiatives</SelectItem>{markets.map(m=><SelectItem key={`M:${m.id}`} value={`M:${m.id}`}>Market: {m.code} · {m.name}</SelectItem>)}{initiatives.map(i=><SelectItem key={`I:${i.id}`} value={`I:${i.id}`}>Initiative: {i.code} · {i.name}</SelectItem>)}</SelectContent></Select>
     </div><Button onClick={()=>{setEditingTask(undefined);setDialogOpen(true)}}><Plus className="h-4 w-4"/>New Task</Button></FilterBar>
     <DataTable columns={columns} data={filtered} emptyMessage="No tasks match your filters."/>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 
 const milestones = [
-  "Onboarding Session",
-  "1:1 Session / Follow up",
+  "Kick-off Meeting",
+  "In-person Market Visit",
   "Implementation Plan aligned",
   "Implementation started",
   "Implementation done",
@@ -22,7 +22,6 @@ export function MilestoneJourney({marketId,marketName,autoCompleted=0,savedCompl
   const progress=Math.round((completed/milestones.length)*100);
 
   const saveCompleted=async(value:number)=>{const next=Math.min(Math.max(value,0),milestones.length);const previous=completed;setCompleted(next);setSaving(true);setError("");try{const response=await fetch(`/api/markets/${marketId}/milestones`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({completed:next})});if(!response.ok)throw new Error("Unable to save milestone progress.")}catch(err){setCompleted(previous);setError(err instanceof Error?err.message:"Unable to save milestone progress.")}finally{setSaving(false)}};
-  const sourceText=useMemo(()=>autoCompleted>0?`${autoCompleted} milestone${autoCompleted>1?"s":""} suggested from market meetings`:"No meeting-based milestone suggestion",[autoCompleted]);
 
   return <div className="rounded-xl border p-4">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-sm font-semibold">{marketName}</p><p className="mt-1 text-xs text-muted-foreground">Current milestone: <span className="font-medium text-foreground">{currentLabel}</span> · {completed}/5 · {progress}%</p></div><span className="rounded-full bg-[#78FAAE] px-2.5 py-1 text-[11px] font-semibold text-[#0E3A2F]">{completed>=5?"Complete":"In progress"}</span></div>
@@ -32,7 +31,7 @@ export function MilestoneJourney({marketId,marketName,autoCompleted=0,savedCompl
         <div className={`text-[10px] leading-4 transition-colors ${current?"font-bold text-[#0E3A2F]":done?"font-semibold text-[#0E3A2F]":"text-muted-foreground"}`}>{done&&<Check className="mr-1 inline h-3 w-3"/>}{label}</div>
       </button>})}
     </div>
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-3"><p className="text-[11px] text-muted-foreground">{sourceText}. Meeting detection is a suggestion only and never locks progress. <strong>Electric green = current.</strong> Emerald + ✓ = completed. Grey = upcoming. Click any milestone to move the current position forward or backward.</p>{saving&&<span className="flex items-center gap-1 text-[11px] text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin"/>Saving…</span>}</div>
+    <div className="mt-4 flex justify-end border-t pt-3">{saving&&<span className="flex items-center gap-1 text-[11px] text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin"/>Saving…</span>}</div>
     {error&&<p className="mt-2 text-xs text-destructive">{error}</p>}
   </div>;
 }

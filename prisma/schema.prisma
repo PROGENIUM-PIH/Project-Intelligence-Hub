@@ -169,6 +169,8 @@ model MarketInitiative {
   marketId     String
   initiativeId String
   localStatus  Health @default(ON_TRACK)
+  rolloutStage String @default("NO_INTEREST_YET")
+  statusComment String?
   localLead    String
 
   market     Market     @relation(fields: [marketId], references: [id], onDelete: Cascade)

@@ -31,7 +31,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 type RiskFormProps = {
-  initiatives: { id: string; code: string; name: string }[];
+  initiatives: { id: string; code: string | null; name: string }[];
   risk?: {
     id: string;
     title: string;
@@ -174,7 +174,7 @@ export function RiskForm({ initiatives, risk, onSuccess }: RiskFormProps) {
           <SelectContent>
             {initiatives.map((i) => (
               <SelectItem key={i.id} value={i.id}>
-                {i.code} · {i.name}
+                {i.code ? `${i.code} · ` : ""}{i.name}
               </SelectItem>
             ))}
           </SelectContent>

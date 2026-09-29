@@ -27,5 +27,11 @@ export async function updateMarketInitiativeRollout(linkId:string,stage:string){
 }
 
 export async function updateMarketInitiativeComment(linkId:string,comment:string){
-  const value=z.string().max(3000).parse(comment).trim();const link=await prisma.marketInitiative.update({where:{id:linkId},data:{statusComment:value||null},select:{marketId:true,initiativeId:true}});await refresh(link);return {ok:true} as const;
+  const value=z.string().max(3000).parse(comment).trim();
+  const current=await prisma.marketInitiative.findUniqueOrThrow({where:{id:linkId},select:{marketId:true,initiativeId:true,rolloutStage:true,statusComment:true}});
+  await prisma.$transaction(async(tx)=>{
+    if(value && value!==current.statusComment){await tx.marketInitiativeComment.create({data:{marketInitiativeId:linkId,rolloutStage:current.rolloutStage,comment:value}})}
+    await tx.marketInitiative.update({where:{id:linkId},data:{statusComment:value||null}});
+  });
+  await refresh(current);return {ok:true} as const;
 }

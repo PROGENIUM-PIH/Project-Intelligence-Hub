@@ -37,10 +37,10 @@ export type RiskRow = {
   owner: string;
   identifiedDate: Date;
   initiativeId: string;
-  initiative: { id: string; code: string; name: string };
+  initiative: { id: string; code: string | null; name: string };
 };
 
-type InitiativeOption = { id: string; code: string; name: string };
+type InitiativeOption = { id: string; code: string | null; name: string };
 
 export function RisksClient({
   risks,
@@ -76,7 +76,7 @@ export function RisksClient({
             {row.original.title}
           </p>
           <p className="text-xs text-muted-foreground">
-            {row.original.initiative.code} · {row.original.initiative.name}
+            {row.original.initiative.code ? `${row.original.initiative.code} · ` : ""}{row.original.initiative.name}
           </p>
         </div>
       ),

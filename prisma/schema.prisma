@@ -77,15 +77,15 @@ model Market {
 
 model Initiative {
   id          String   @id @default(cuid())
-  code        String   @unique
+  code        String?  @unique
   name        String
   description String
   owner       String
   status      Health   @default(ON_TRACK)
   progress    Int      @default(0)
   stage       String   @default("IDEATION")
-  startDate   DateTime
-  targetDate  DateTime
+  startDate   DateTime?
+  targetDate  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

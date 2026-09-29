@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import { upload as uploadBlob } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import { FileUp, Loader2, Sparkles, UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,27 +39,20 @@ export function InitiativeInput({ initiatives, fixedInitiative, compact = false 
 
   async function upload() {
     if (!file || !selected) return;
-    setUploading(true);
-    setError("");
-    setSuccess("");
+    setUploading(true); setError(""); setSuccess("");
     const isGeneral = selected.id === "__general__";
-    const form = new FormData();
-    form.append("file", file);
-    form.append("contextType", isGeneral ? "GENERAL" : "INITIATIVE");
-    form.append("contextCode", selected.code);
-    form.append("entityId", isGeneral ? "" : selected.id);
     try {
-      const response = await fetch("/api/documents/upload", { method: "POST", body: form });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Upload failed.");
+      const safeName=file.name.replace(/[^a-zA-Z0-9._-]+/g,"-");
+      await uploadBlob(`documents/${isGeneral?"general":`initiative/${selected.code}`}/${safeName}`,file,{
+        access:"private",
+        handleUploadUrl:"/api/documents/initiative-input",
+        clientPayload:JSON.stringify({contextType:isGeneral?"GENERAL":"INITIATIVE",entityId:isGeneral?undefined:selected.id,name:file.name,size:file.size,contentType:file.type})
+      });
       setSuccess(`${file.name} uploaded and assigned to ${selected.name}.`);
-      setFile(null);
-      router.refresh();
+      setFile(null); router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed.");
-    } finally {
-      setUploading(false);
-    }
+    } finally { setUploading(false); }
   }
 
   return (

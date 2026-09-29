@@ -28,7 +28,7 @@ export default async function ManagementReportPage({ searchParams }: { searchPar
   ]);
 
   const marketNeedles = market ? [market.name.toLowerCase(), market.code.toLowerCase()] : [];
-  const initiativeNeedle = initiative?.code.toLowerCase();
+  const initiativeNeedle = initiative?.code?.toLowerCase();
   const meetings = allMeetings.filter((m) => {
     const text = `${m.title}\n${m.notes}`.toLowerCase();
     return (!marketId || m.marketId === marketId || marketNeedles.some((n) => text.includes(n))) && (!initiativeId || m.initiativeId === initiativeId || (!!initiativeNeedle && text.includes(initiativeNeedle)));

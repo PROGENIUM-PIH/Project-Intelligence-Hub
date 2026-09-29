@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog,DialogContent,DialogHeader,DialogTitle } from "@/components/ui/dialog";
 import { updateMarketInitiativeRollout,updateMarketInitiativeComment } from "@/lib/actions/market-initiatives";
 
+// Rollout stage comments keep an immutable history in the database.
 const labels:Record<string,string>={NO_INTEREST_YET:"No interest yet",REJECTED:"Rejected",INTERESTED:"Interested",IN_EVALUATION:"In Evaluation",PILOTING:"Piloting",IMPLEMENTATION_AGREED:"Implementation Agreed",MEASURE_IN_PLACE:"Measure in Place"};
 type HistoryItem={id:string;rolloutStage:string;comment:string;createdAt:Date|string};
 export function MarketInitiativeStatus({linkId,value,comment,history=[]}:{linkId:string;value:string;comment?:string|null;history?:HistoryItem[]}){

@@ -35,9 +35,9 @@ export function MarketMeetingButton({ market }: { market: Market }) {
     }
   }
 
-  return <div className="relative">
+  return <div>
     <Button type="button" onClick={() => setOpen((v) => !v)} className="bg-[#0E3A2F] text-white hover:bg-[#0E3A2F]/90"><CalendarPlus className="h-4 w-4" />Add Meeting</Button>
-    {open ? <div className="absolute right-0 top-11 z-50 w-[min(30rem,calc(100vw-3rem))] rounded-xl border bg-card p-5 shadow-xl">
+    {open ? <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/20 px-4 pb-8 pt-[5vh]" onMouseDown={(e) => { if (e.currentTarget === e.target) setOpen(false); }}><div className="w-full max-w-2xl rounded-xl border bg-card p-6 shadow-2xl">
       <div className="mb-4 flex items-start justify-between"><div><p className="font-semibold">Add Market Meeting</p><p className="text-xs text-muted-foreground">Linked directly to {market.name}.</p></div><button type="button" onClick={() => setOpen(false)} className="rounded-md p-1 hover:bg-secondary"><X className="h-4 w-4" /></button></div>
       <div className="space-y-4">
         <label className="grid gap-1.5 text-sm">Title<input className="h-10 rounded-md border bg-background px-3" value={title} onChange={(e) => setTitle(e.target.value)} /></label>

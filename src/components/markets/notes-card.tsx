@@ -7,7 +7,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-type Initiative = { id: string; code: string; name: string };
+type Initiative = { id: string; code: string | null; name: string };
 type Note = { id: string; content: string; createdAt: string | Date; initiative: Initiative | null };
 
 export function NotesCard({ marketId, initiatives, notes }: { marketId: string; initiatives: Initiative[]; notes: Note[] }) {
@@ -44,7 +44,7 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
         <div className="grid grid-cols-1 gap-2 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
           <select value={initiativeId} onChange={(e)=>setInitiativeId(e.target.value)} className="h-10 min-w-0 w-full rounded-md border border-input bg-background px-3 text-sm">
             <option value="GENERAL">General</option>
-            {initiatives.map(i=><option key={i.id} value={i.id}>{i.code} · {i.name}</option>)}
+            {initiatives.map(i=><option key={i.id} value={i.id}>{i.code ? `${i.code} · ` : ""}{i.name}</option>)}
           </select>
           <Button className="h-10 w-full whitespace-nowrap xl:w-auto xl:min-w-28" onClick={saveNote} disabled={saving || !content.trim()}>{saving ? "Saving..." : "Save Note"}</Button>
         </div>
@@ -65,7 +65,7 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
 
       <div className="max-h-72 space-y-2 overflow-y-auto pr-2">
         {notes.length===0&&<p className="text-sm text-muted-foreground">No notes added yet.</p>}
-        {notes.map(note=><div key={note.id} className="rounded-lg border p-3"><div className="mb-1 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-medium">{note.initiative ? `${note.initiative.code} · ${note.initiative.name}` : "General"}</p><p className="text-xs text-muted-foreground">{format(new Date(note.createdAt), "MMM d, yyyy · HH:mm")}</p></div><p className="whitespace-pre-wrap text-sm">{note.content}</p></div>)}
+        {notes.map(note=><div key={note.id} className="rounded-lg border p-3"><div className="mb-1 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-medium">{note.initiative ? `${note.initiative.code ? `${note.initiative.code} · ` : ""}${note.initiative.name}` : "General"}</p><p className="text-xs text-muted-foreground">{format(new Date(note.createdAt), "MMM d, yyyy · HH:mm")}</p></div><p className="whitespace-pre-wrap text-sm">{note.content}</p></div>)}
       </div>
     </CardContent>
   </Card>;

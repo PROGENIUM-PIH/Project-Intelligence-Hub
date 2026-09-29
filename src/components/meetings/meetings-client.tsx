@@ -17,8 +17,8 @@ import { CalendarImport } from "@/components/meetings/calendar-import";
 import { meetingTypeLabel } from "@/lib/status";
 import { deleteMeeting } from "@/lib/actions/meetings";
 
-export type MeetingRow = { id:string; title:string; type:string; scope:string; date:Date; notes:string; participants:string|null; location:string|null; documentUrl:string|null; marketId:string|null; initiativeId:string|null; market:{id:string;code:string;name:string}|null; initiative:{id:string;code:string;name:string}|null };
-type Option={id:string;code:string;name:string};
+export type MeetingRow = { id:string; title:string; type:string; scope:string; date:Date; notes:string; participants:string|null; location:string|null; documentUrl:string|null; marketId:string|null; initiativeId:string|null; market:{id:string;code:string;name:string}|null; initiative:{id:string;code:string|null;name:string}|null };
+type Option={id:string;code:string|null;name:string};
 type Tab="UPCOMING"|"PAST"|"REVIEW";
 
 export function MeetingsClient({meetings,markets,initiatives}:{meetings:MeetingRow[];markets:Option[];initiatives:Option[]}){

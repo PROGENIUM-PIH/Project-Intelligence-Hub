@@ -175,8 +175,21 @@ model MarketInitiative {
 
   market     Market     @relation(fields: [marketId], references: [id], onDelete: Cascade)
   initiative Initiative @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
+  commentHistory MarketInitiativeComment[]
 
   @@unique([marketId, initiativeId])
+}
+
+model MarketInitiativeComment {
+  id                 String   @id @default(cuid())
+  marketInitiativeId String
+  rolloutStage       String
+  comment            String
+  createdAt          DateTime @default(now())
+
+  marketInitiative MarketInitiative @relation(fields: [marketInitiativeId], references: [id], onDelete: Cascade)
+
+  @@index([marketInitiativeId, createdAt])
 }
 
 model Task {

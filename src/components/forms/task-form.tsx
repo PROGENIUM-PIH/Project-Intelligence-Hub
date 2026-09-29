@@ -24,7 +24,7 @@ const formSchema = z.object({
 }).refine((data) => !!data.initiativeId || !!data.marketId, { message: "Select a market or initiative", path: ["initiativeId"] });
 
 type FormValues = z.infer<typeof formSchema>;
-type Option = { id: string; code: string; name: string };
+type Option = { id: string; code: string | null; name: string };
 
 type TaskFormProps = {
   initiatives: Option[];
@@ -68,7 +68,7 @@ export function TaskForm({ initiatives, markets, task, onSuccess }: TaskFormProp
     </div>
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="space-y-1.5"><Label>Market</Label><Select value={watch("marketId") || "NONE"} onValueChange={(v)=>setValue("marketId",v==="NONE"?"":v)}><SelectTrigger><SelectValue placeholder="Optional"/></SelectTrigger><SelectContent><SelectItem value="NONE">No market</SelectItem>{markets.map((m)=><SelectItem key={m.id} value={m.id}>{m.code} · {m.name}</SelectItem>)}</SelectContent></Select></div>
-      <div className="space-y-1.5"><Label>Initiative</Label><Select value={watch("initiativeId") || "NONE"} onValueChange={(v)=>setValue("initiativeId",v==="NONE"?"":v)}><SelectTrigger><SelectValue placeholder="Optional"/></SelectTrigger><SelectContent><SelectItem value="NONE">No initiative</SelectItem>{initiatives.map((i)=><SelectItem key={i.id} value={i.id}>{i.code} · {i.name}</SelectItem>)}</SelectContent></Select>{errors.initiativeId&&<p className="text-xs text-destructive">{errors.initiativeId.message}</p>}</div>
+      <div className="space-y-1.5"><Label>Initiative</Label><Select value={watch("initiativeId") || "NONE"} onValueChange={(v)=>setValue("initiativeId",v==="NONE"?"":v)}><SelectTrigger><SelectValue placeholder="Optional"/></SelectTrigger><SelectContent><SelectItem value="NONE">No initiative</SelectItem>{initiatives.map((i)=><SelectItem key={i.id} value={i.id}>{i.code ? `${i.code} · ` : ""}{i.name}</SelectItem>)}</SelectContent></Select>{errors.initiativeId&&<p className="text-xs text-destructive">{errors.initiativeId.message}</p>}</div>
     </div>
     <p className="text-xs text-muted-foreground">Assign the task to a market, an initiative, or both.</p>
     {serverError&&<p className="text-sm text-destructive">{serverError}</p>}

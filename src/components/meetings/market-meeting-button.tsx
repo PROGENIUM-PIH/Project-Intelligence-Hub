@@ -46,6 +46,6 @@ export function MarketMeetingButton({ market }: { market: Market }) {
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         <div className="flex justify-end"><Button type="button" onClick={save} disabled={!date || saving}>{saving ? "Scheduling..." : "Schedule meeting"}</Button></div>
       </div>
-    </div> : null}
+    </div></div> : null}
   </div>;
 }

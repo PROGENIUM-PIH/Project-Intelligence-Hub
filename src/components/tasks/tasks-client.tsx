@@ -17,7 +17,7 @@ import { TaskForm } from "@/components/forms/task-form";
 import { taskStatusTone, priorityTone } from "@/lib/status";
 import { deleteTask } from "@/lib/actions/tasks";
 
-type ScopeOption = { id: string; code: string; name: string };
+type ScopeOption = { id: string; code: string | null; name: string };
 
 export type TaskRow = {
   id: string; title: string; description: string; status: string; priority: string; assignee: string; dueDate: Date;
@@ -44,7 +44,7 @@ export function TasksClient({ tasks, initiatives, markets, initialStatus="ALL" }
   }), [tasks, statusFilter, scopeFilter, search]);
 
   const columns: ColumnDef<TaskRow>[] = [
-    { accessorKey: "title", header: "Task", cell: ({ row }) => <div className="min-w-0 max-w-xs"><p className="truncate text-sm font-medium text-foreground">{row.original.title}</p><p className="text-xs text-muted-foreground">{[row.original.market ? `${row.original.market.code} · ${row.original.market.name}` : "", row.original.initiative ? `${row.original.initiative.code} · ${row.original.initiative.name}` : ""].filter(Boolean).join(" | ") || "Unassigned"}</p></div> },
+    { accessorKey: "title", header: "Task", cell: ({ row }) => <div className="min-w-0 max-w-xs"><p className="truncate text-sm font-medium text-foreground">{row.original.title}</p><p className="text-xs text-muted-foreground">{[row.original.market ? `${row.original.market.code} · ${row.original.market.name}` : "", row.original.initiative ? `${row.original.initiative.code ? `${row.original.initiative.code} · ` : ""}${row.original.initiative.name}` : ""].filter(Boolean).join(" | ") || "Unassigned"}</p></div> },
     { accessorKey: "assignee", header: "Assignee", cell: ({ row }) => <span className="text-sm text-foreground">{row.original.assignee}</span> },
     { accessorKey: "priority", header: "Priority", cell: ({ row }) => { const t=priorityTone(row.original.priority); return <StatusBadge label={t.label} tone={t.tone}/>; } },
     { accessorKey: "status", header: "Status", cell: ({ row }) => { const t=taskStatusTone(row.original.status); return <StatusBadge label={t.label} tone={t.tone}/>; } },
@@ -56,7 +56,7 @@ export function TasksClient({ tasks, initiatives, markets, initialStatus="ALL" }
     <FilterBar className="mb-4 justify-between"><div className="flex flex-col gap-3 sm:flex-row sm:items-center">
       <SearchBar placeholder="Search tasks..." value={search} onChange={setSearch} className="w-full sm:w-64"/>
       <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger className="w-full sm:w-40"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="ALL">All statuses</SelectItem><SelectItem value="ACTIVE">Active</SelectItem><SelectItem value="TODO">To Do</SelectItem><SelectItem value="IN_PROGRESS">In Progress</SelectItem><SelectItem value="DONE">Done</SelectItem><SelectItem value="BLOCKED">Blocked</SelectItem></SelectContent></Select>
-      <Select value={scopeFilter} onValueChange={setScopeFilter}><SelectTrigger className="w-full sm:w-56"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="ALL">All markets & initiatives</SelectItem>{markets.map(m=><SelectItem key={`M:${m.id}`} value={`M:${m.id}`}>Market: {m.code} · {m.name}</SelectItem>)}{initiatives.map(i=><SelectItem key={`I:${i.id}`} value={`I:${i.id}`}>Initiative: {i.code} · {i.name}</SelectItem>)}</SelectContent></Select>
+      <Select value={scopeFilter} onValueChange={setScopeFilter}><SelectTrigger className="w-full sm:w-56"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="ALL">All markets & initiatives</SelectItem>{markets.map(m=><SelectItem key={`M:${m.id}`} value={`M:${m.id}`}>Market: {m.code} · {m.name}</SelectItem>)}{initiatives.map(i=><SelectItem key={`I:${i.id}`} value={`I:${i.id}`}>Initiative: {i.code ? `${i.code} · ` : ""}{i.name}</SelectItem>)}</SelectContent></Select>
     </div><Button onClick={()=>{setEditingTask(undefined);setDialogOpen(true)}}><Plus className="h-4 w-4"/>New Task</Button></FilterBar>
     <DataTable columns={columns} data={filtered} emptyMessage="No tasks match your filters."/>
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>{editingTask?"Edit Task":"New Task"}</DialogTitle></DialogHeader><TaskForm initiatives={initiatives} markets={markets} task={editingTask} onSuccess={()=>{setDialogOpen(false);router.refresh()}}/></DialogContent></Dialog>

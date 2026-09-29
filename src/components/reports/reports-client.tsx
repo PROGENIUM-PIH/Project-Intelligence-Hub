@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 
-type Props = { markets: { id: string; name: string; code: string }[]; initiatives: { id: string; code: string; name: string }[] };
+type Props = { markets: { id: string; name: string; code: string }[]; initiatives: { id: string; code: string | null; name: string }[] };
 
 function escapeRegExp(value: string) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function hasToken(text: string, token: string) { return new RegExp(`(^|[^a-z0-9])${escapeRegExp(token.toLowerCase())}([^a-z0-9]|$)`, "i").test(text); }
@@ -33,10 +33,10 @@ export function ReportsClient({ markets, initiatives }: Props) {
     const market = markets.find((m) => lower.includes(m.name.toLowerCase()) || hasToken(lower, m.code));
     const requestsAllInitiatives = /\ball\s+initiatives\b/i.test(lower) || /\bacross\s+(?:all\s+)?initiatives\b/i.test(lower) || /\binitiative\s+portfolio\b/i.test(lower);
     const explicitInitiativeMatch = lower.match(/\bid\s*0*(\d+)\b/i);
-    let initiative = requestsAllInitiatives ? undefined : initiatives.find((i) => hasToken(lower, i.code) || lower.includes(i.name.toLowerCase()));
+    let initiative = requestsAllInitiatives ? undefined : initiatives.find((i) => (i.code ? hasToken(lower, i.code) : false) || lower.includes(i.name.toLowerCase()));
     if (!requestsAllInitiatives && !initiative && explicitInitiativeMatch) {
       const requestedNumber = Number(explicitInitiativeMatch[1]);
-      initiative = initiatives.find((i) => { const codeMatch = i.code.match(/(\d+)/); return codeMatch ? Number(codeMatch[1]) === requestedNumber : false; });
+      initiative = initiatives.find((i) => { const codeMatch = i.code?.match(/(\d+)/); return codeMatch ? Number(codeMatch[1]) === requestedNumber : false; });
     }
     const weekMatch = lower.match(/(?:last|past|letzten?|vergangenen?)\s+(1|2|3|4|5|6|one|two|three|four|five|six|eins|zwei|drei|vier|fuenf|fünf|sechs)\s+(?:weeks?|wochen?)/i);
     if (market) setMarketId(market.id);
@@ -53,7 +53,7 @@ export function ReportsClient({ markets, initiatives }: Props) {
     </CardContent></Card>
     <Card><CardHeader><div className="flex items-center gap-2"><FileSpreadsheet className="h-5 w-5"/><CardTitle>Report Settings & Data Export</CardTitle></div><CardDescription>Set the scope explicitly before creating the PDF or exporting source data.</CardDescription></CardHeader><CardContent className="space-y-4">
       <label className="grid gap-1.5 text-sm">Market<select className="h-10 rounded-md border bg-background px-3" value={marketId} onChange={(e)=>setMarketId(e.target.value)}>{markets.map(m=><option key={m.id} value={m.id}>{m.name} ({m.code})</option>)}</select></label>
-      <label className="grid gap-1.5 text-sm">Initiative<select className="h-10 rounded-md border bg-background px-3" value={initiativeId} onChange={(e)=>setInitiativeId(e.target.value)}><option value="ALL">All Initiatives</option>{initiatives.map(i=><option key={i.id} value={i.id}>{i.code} — {i.name}</option>)}</select></label>
+      <label className="grid gap-1.5 text-sm">Initiative<select className="h-10 rounded-md border bg-background px-3" value={initiativeId} onChange={(e)=>setInitiativeId(e.target.value)}><option value="ALL">All Initiatives</option>{initiatives.map(i=><option key={i.id} value={i.id}>{i.code ? `${i.code} — ` : ""}{i.name}</option>)}</select></label>
       <label className="grid gap-1.5 text-sm">Time window<select className="h-10 rounded-md border bg-background px-3" value={weeks} onChange={(e)=>setWeeks(e.target.value)}><option value="1">Last 1 week</option><option value="2">Last 2 weeks</option><option value="3">Last 3 weeks</option><option value="4">Last 4 weeks</option><option value="5">Last 5 weeks</option><option value="6">Last 6 weeks</option><option value="12">Last 12 weeks</option><option value="26">Last 6 months</option><option value="52">Last 12 months</option></select></label>
       <Button asChild className="w-full bg-[#78FAAE] text-[#0E3A2F] hover:bg-[#63e89a]"><a href={managementUrl}><FileText className="h-4 w-4"/>Generate Management Report</a></Button>
       <Button asChild variant="outline" className="w-full"><a href={downloadUrl}><Download className="h-4 w-4"/>Download CSV</a></Button>

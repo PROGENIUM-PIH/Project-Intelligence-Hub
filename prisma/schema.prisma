@@ -61,6 +61,7 @@ model Market {
   code                 String   @unique
   region               String
   lead                 String
+  owner                String?
   status               Health   @default(ON_TRACK)
   milestoneCompleted   Int      @default(0)
   milestoneUpdatedAt   DateTime?

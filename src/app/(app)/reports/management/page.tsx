@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { ReportPrintButton } from "@/components/reports/report-print-button";\n\nexport const dynamic = "force-dynamic";\nexport const revalidate = 0;
+import { ReportPrintButton } from "@/components/reports/report-print-button";
 
 function pretty(value: string) {
   return value.toLowerCase().split("_").map((p) => p[0]?.toUpperCase() + p.slice(1)).join(" ");

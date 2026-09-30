@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
-import { ReportsClient } from "@/components/reports/reports-client";\n\nexport const dynamic = "force-dynamic";\nexport const revalidate = 0;
+import { ReportsClient } from "@/components/reports/reports-client";
 
 export default async function ReportsPage() {
   const [markets, initiatives] = await Promise.all([

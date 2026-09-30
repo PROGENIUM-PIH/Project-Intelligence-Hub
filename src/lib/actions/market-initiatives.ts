@@ -35,3 +35,11 @@ export async function updateMarketInitiativeComment(linkId:string,comment:string
   });
   await refresh(current);return {ok:true} as const;
 }
+
+
+export async function unlinkMarketInitiative(linkId:string){
+  const link=await prisma.marketInitiative.findUniqueOrThrow({where:{id:linkId},select:{marketId:true,initiativeId:true}});
+  await prisma.marketInitiative.delete({where:{id:linkId}});
+  await refresh(link);
+  return {ok:true} as const;
+}

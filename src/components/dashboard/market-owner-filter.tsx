@@ -1,0 +1,4 @@
+"use client";
+import {usePathname,useRouter,useSearchParams} from "next/navigation";
+const options=["Maja","Anna","ALL"] as const;
+export function MarketOwnerFilter(){const router=useRouter(),pathname=usePathname(),params=useSearchParams();const active=params.get("owner")||"ALL";function select(owner:string){const next=new URLSearchParams(params.toString());if(owner==="ALL")next.delete("owner");else next.set("owner",owner);router.replace(`${pathname}${next.size?`?${next.toString()}`:""}`)}return <div className="flex items-center gap-1 rounded-lg border bg-card p-1">{options.map(o=><button key={o} type="button" onClick={()=>select(o)} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${active===o?"bg-[#0E3A2F] text-white":"text-muted-foreground hover:bg-secondary"}`}>{o}</button>)}</div>}

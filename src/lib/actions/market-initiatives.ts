@@ -43,3 +43,9 @@ export async function unlinkMarketInitiative(linkId:string){
   await refresh(link);
   return {ok:true} as const;
 }
+
+export async function linkExistingInitiative(marketId:string,initiativeId:string,localLead:string="TBD"){
+  const ids=z.object({marketId:z.string().min(1),initiativeId:z.string().min(1),localLead:z.string().max(200)}).parse({marketId,initiativeId,localLead});
+  const link=await prisma.marketInitiative.upsert({where:{marketId_initiativeId:{marketId:ids.marketId,initiativeId:ids.initiativeId}},update:{localLead:ids.localLead||"TBD"},create:{marketId:ids.marketId,initiativeId:ids.initiativeId,localLead:ids.localLead||"TBD"},select:{marketId:true,initiativeId:true}});
+  await refresh(link);return {ok:true} as const;
+}

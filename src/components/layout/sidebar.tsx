@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { NavLinks } from "./nav-links";
 
 export function Sidebar() {
@@ -7,7 +8,9 @@ export function Sidebar() {
         <span className="text-base font-semibold tracking-tight">RISE <span className="text-sidebar-primary">Hub</span></span>
       </div>
       <NavLinks />
-      <div className="mt-auto border-t border-sidebar-border px-6 py-4 text-xs text-sidebar-foreground/50">Global Sales Transformation Program</div>
+      <div className="mt-auto border-t border-sidebar-border px-6 py-4">
+        <Image src="/SKODA LOGO.jpg" alt="Škoda" width={148} height={36} className="h-auto w-[148px] object-contain" />
+      </div>
     </aside>
   );
 }

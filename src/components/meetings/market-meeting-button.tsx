@@ -25,14 +25,13 @@ export function MarketMeetingButton({ market, meeting, children }: { market: Mar
   const [notes, setNotes] = useState(meeting?.notes ?? "");
   const [participants, setParticipants] = useState(meeting?.participants ?? "");
   const [location, setLocation] = useState(meeting?.location ?? "");
-  const [documentUrl, setDocumentUrl] = useState(meeting?.documentUrl ?? "");
   const [error, setError] = useState("");
 
   async function save() {
     if (!date || title.trim().length < 3) return;
     setSaving(true); setError("");
     try {
-      const payload = { title, type: type as "STATUS_REVIEW"|"STEERING_COMMITTEE"|"WORKSHOP"|"KICKOFF"|"OTHER", scope: "MARKET" as const, date: new Date(date), notes: notes.trim(), participants: participants.trim(), location: location.trim(), documentUrl: documentUrl.trim(), marketId: market.id, initiativeId: null };
+      const payload = { title, type: type as "STATUS_REVIEW"|"STEERING_COMMITTEE"|"WORKSHOP"|"KICKOFF"|"OTHER", scope: "MARKET" as const, date: new Date(date), notes: notes.trim(), participants: participants.trim(), location: location.trim(), documentUrl: meeting?.documentUrl ?? "", marketId: market.id, initiativeId: null };
       if (meeting) await updateMeeting(meeting.id, payload); else await createMeeting(payload);
       setOpen(false); router.refresh();
     } catch { setError("Could not save meeting."); } finally { setSaving(false); }
@@ -46,7 +45,6 @@ export function MarketMeetingButton({ market, meeting, children }: { market: Mar
         <label className="grid gap-1.5 text-sm">Title<input className="h-10 rounded-md border bg-background px-3" value={title} onChange={e=>setTitle(e.target.value)}/></label>
         <div className="grid grid-cols-2 gap-3"><label className="grid gap-1.5 text-sm">Type<select className="h-10 rounded-md border bg-background px-3" value={type} onChange={e=>setType(e.target.value)}><option value="STATUS_REVIEW">Status Review</option><option value="STEERING_COMMITTEE">Steering Committee</option><option value="WORKSHOP">Workshop</option><option value="KICKOFF">Kickoff</option><option value="OTHER">Other</option></select></label><label className="grid gap-1.5 text-sm">Date & time<input type="datetime-local" className="h-10 rounded-md border bg-background px-3" value={date} onChange={e=>setDate(e.target.value)}/></label></div>
         <div className="grid grid-cols-2 gap-3"><label className="grid gap-1.5 text-sm">Participants<input className="h-10 rounded-md border bg-background px-3" value={participants} onChange={e=>setParticipants(e.target.value)}/></label><label className="grid gap-1.5 text-sm">Location<input className="h-10 rounded-md border bg-background px-3" value={location} onChange={e=>setLocation(e.target.value)}/></label></div>
-        <label className="grid gap-1.5 text-sm">Meeting document<input className="h-10 rounded-md border bg-background px-3" placeholder="Document link" value={documentUrl} onChange={e=>setDocumentUrl(e.target.value)}/></label>
         <label className="grid gap-1.5 text-sm">Agenda / notes<textarea className="min-h-28 rounded-md border bg-background p-3" value={notes} onChange={e=>setNotes(e.target.value)}/></label>
         {error?<p className="text-sm text-destructive">{error}</p>:null}
         <div className="flex justify-end"><Button type="button" onClick={save} disabled={!date||saving}>{saving?"Saving...":meeting?"Save Changes":"Schedule meeting"}</Button></div>

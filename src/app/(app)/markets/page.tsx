@@ -18,7 +18,7 @@ const marketFlagImages: Record<string, string> = {
 
 export default async function MarketsPage({searchParams}:{searchParams:Promise<{owner?:string}>}) {
   const {owner}=await searchParams;
-  const marketWhere = owner === "Maja" || owner === "Anna" ? { owner: owner as "Maja" | "Anna" } : {};
+  const marketWhere = owner === "M. Vlacihova" || owner === "A. Kadlecova" ? { owner } : {};
   const markets = await prisma.market.findMany({ where: marketWhere, orderBy: { name: "asc" }, include: { _count: { select: { initiatives: true } } } });
   return <div>
     <PageHeader title="Market Steering" description="Steerize Implementation across Markets" actions={<><MarketOwnerFilter/><MarketFormButton/><MarketsRefreshButton/></>} />

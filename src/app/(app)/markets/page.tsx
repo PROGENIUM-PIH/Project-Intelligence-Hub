@@ -13,7 +13,7 @@ export const revalidate = 0;
 const marketFlagImages: Record<string, string> = {
   france: "/flags/france.svg", germany: "/flags/germany.svg", austria: "/flags/austria.svg", poland: "/flags/poland.svg", norway: "/flags/norway.svg",
   "czech republic": "/flags/czech-republic.svg", czechia: "/flags/czech-republic.svg", netherlands: "/flags/netherlands.svg", uk: "/flags/uk.svg", "united kingdom": "/flags/uk.svg",
-  ireland: "/flags/ireland.png.png", italy: "/flags/italy.png.png", sweden: "/flags/sweden.png.png", slovakia: "/flags/slovakia.png.png", belgium: "/flags/belgium.png.png",
+  ireland: "/flags/ireland.png.png", italy: "/flags/italy.png.png", sweden: "/flags/sweden.png.png", slovakia: "/flags/slovakia.png.png", belgium: "/flags/belgium.png.png", spain: "/flags/world (5).png",
 };
 
 export default async function MarketsPage({searchParams}:{searchParams:Promise<{owner?:string}>}) {

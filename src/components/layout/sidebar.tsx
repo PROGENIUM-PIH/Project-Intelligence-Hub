@@ -9,7 +9,7 @@ export function Sidebar() {
       </div>
       <NavLinks />
       <div className="mt-auto border-t border-sidebar-border px-6 py-4">
-        <Image src="/SKODA LOGO.jpg" alt="Škoda" width={148} height={36} className="h-auto w-[148px] object-contain" />
+        <Image src="/SKODA-LOGO.png" alt="Škoda" width={148} height={36} className="h-auto w-[148px] object-contain" />
       </div>
     </aside>
   );

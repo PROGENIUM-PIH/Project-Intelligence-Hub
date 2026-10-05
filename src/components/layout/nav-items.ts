@@ -13,7 +13,7 @@ import {
 export type NavItem = { href: string; label: string; icon: LucideIcon };
 
 export const navItems: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard – Quentin Test", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/markets", label: "Market Steering", icon: Globe },
   { href: "/initiatives", label: "Initiatives", icon: Target },
   { href: "/tasks", label: "Task Tracker", icon: ListChecks },

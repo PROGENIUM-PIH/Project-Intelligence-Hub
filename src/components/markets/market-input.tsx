@@ -55,7 +55,7 @@ export function MarketInput({ market }: { market: Market }) {
 
   return <div className="relative">
     <Button type="button" onClick={() => setOpen((v) => !v)} className="bg-[#78FAAE] text-[#0D3B32] hover:bg-[#78FAAE]/90"><FileUp className="h-4 w-4" />Input</Button>
-    {open ? <div className="absolute right-0 top-11 z-50 w-[min(34rem,calc(100vw-3rem))] rounded-xl border border-[#78FAAE] bg-card p-5 shadow-xl">
+    {open ? <div className="absolute right-0 top-11 z-50 w-[min(28rem,calc(100vw-3rem))] max-h-[calc(100vh-8rem)] overflow-y-auto rounded-xl border border-[#78FAAE] bg-card p-5 shadow-xl">
       <div className="mb-4 flex items-start justify-between gap-4"><div><p className="font-semibold">Market Input</p><p className="text-xs text-muted-foreground">Upload a source file directly to {market.name}.</p></div><button type="button" onClick={() => setOpen(false)} className="rounded-md p-1 hover:bg-secondary"><X className="h-4 w-4" /></button></div>
       <div className="space-y-4">
         <div className="rounded-md border bg-secondary/30 px-3 py-2 text-sm"><span className="font-medium">{market.code}</span> — {market.name}</div>

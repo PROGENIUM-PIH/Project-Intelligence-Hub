@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CalendarPlus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { createMeeting, updateMeeting } from "@/lib/actions/meetings";
+import { createMeeting, deleteMeeting, updateMeeting } from "@/lib/actions/meetings";
 
 type Market = { id: string; code: string; name: string };
 export type MarketMeeting = { id:string; title:string; type:string; date:Date|string; notes:string; participants:string|null; location:string|null; documentUrl:string|null };
@@ -19,6 +19,7 @@ export function MarketMeetingButton({ market, meeting, children }: { market: Mar
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [title, setTitle] = useState(meeting?.title ?? `${market.name} status review`);
   const [type, setType] = useState(meeting?.type ?? "STATUS_REVIEW");
   const [date, setDate] = useState(meeting ? toLocalInput(meeting.date) : "");
@@ -26,6 +27,14 @@ export function MarketMeetingButton({ market, meeting, children }: { market: Mar
   const [participants, setParticipants] = useState(meeting?.participants ?? "");
   const [location, setLocation] = useState(meeting?.location ?? "");
   const [error, setError] = useState("");
+
+  async function deleteCurrentMeeting() {
+    if (!meeting || !window.confirm(`Delete "${meeting.title}"? This cannot be undone.`)) return;
+    setDeleting(true); setError("");
+    try { await deleteMeeting(meeting.id); setOpen(false); router.refresh(); }
+    catch { setError("Could not delete meeting."); }
+    finally { setDeleting(false); }
+  }
 
   async function save() {
     if (!date || title.trim().length < 3) return;
@@ -47,7 +56,7 @@ export function MarketMeetingButton({ market, meeting, children }: { market: Mar
         <div className="grid grid-cols-2 gap-3"><label className="grid gap-1.5 text-sm">Participants<input className="h-10 rounded-md border bg-background px-3" value={participants} onChange={e=>setParticipants(e.target.value)}/></label><label className="grid gap-1.5 text-sm">Location<input className="h-10 rounded-md border bg-background px-3" value={location} onChange={e=>setLocation(e.target.value)}/></label></div>
         <label className="grid gap-1.5 text-sm">Agenda / notes<textarea className="min-h-28 rounded-md border bg-background p-3" value={notes} onChange={e=>setNotes(e.target.value)}/></label>
         {error?<p className="text-sm text-destructive">{error}</p>:null}
-        <div className="flex justify-end"><Button type="button" onClick={save} disabled={!date||saving}>{saving?"Saving...":meeting?"Save Changes":"Schedule meeting"}</Button></div>
+        <div className="flex justify-end gap-2"><Button type="button" onClick={save} disabled={!date||saving||deleting}>{saving?"Saving...":meeting?"Save Changes":"Schedule meeting"}</Button>{meeting?<Button type="button" variant="destructive" onClick={deleteCurrentMeeting} disabled={saving||deleting}>{deleting?"Deleting...":"Delete Meeting"}</Button>:null}</div>
       </div>
     </div></div>:null}
   </div>;

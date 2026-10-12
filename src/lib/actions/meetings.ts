@@ -57,14 +57,14 @@ function extractActions(notes: string) {
   const lines = notes.split(/\r?\n/);
   const actions: { title: string; assignee: string; dueDate: Date | null }[] = [];
   for (const line of lines) {
-    const match = line.trim().match(/^(?:[-*]\\s*)?(?:\\[\\s*\\]\\s*)?(?:ACTION|TASK|TODO|ACTION ITEM|AUFGABE|TO-DO)\\s*[:\\-]\\s*(.+)$/i);
+    const match = line.trim().match(/^(?:[-*]\s*)?(?:\[\s*\]\s*)?(?:ACTION|TASK|TODO|ACTION ITEM|AUFGABE|TO-DO)\s*[:\-]\s*(.+)$/i);
     if (!match) continue;
     let title = match[1].trim();
-    const owner = title.match(/(?:\\s+\\|\\s*|\\s+)(?:owner|assignee|responsible|verantwortlich)\\s*:\\s*([^|]+?)(?=\\s*\\||$)/i);
-    const due = title.match(/(?:\\s+\\|\\s*|\\s+)(?:due|deadline|fällig)\\s*:\\s*(\\d{4}-\\d{2}-\\d{2})(?=\\s*\\||$)/i);
+    const owner = title.match(/(?:\s+\|\s*|\s+)(?:owner|assignee|responsible|verantwortlich)\s*:\s*([^|]+?)(?=\s*\||$)/i);
+    const due = title.match(/(?:\s+\|\s*|\s+)(?:due|deadline|fällig)\s*:\s*(\d{4}-\d{2}-\d{2})(?=\s*\||$)/i);
     const assignee = owner?.[1]?.trim() || "Unassigned";
     const dueDate = due ? new Date(due[1] + "T12:00:00Z") : null;
-    title = title.replace(/\\s*\\|?\\s*(?:owner|assignee|responsible|verantwortlich|due|deadline|fällig)\\s*:\\s*[^|]+/gi, "").trim();
+    title = title.replace(/\s*\|?\s*(?:owner|assignee|responsible|verantwortlich|due|deadline|fällig)\s*:\s*[^|]+/gi, "").trim();
     if (title.length >= 3 && (!dueDate || !Number.isNaN(dueDate.getTime())) && !actions.some(a => a.title.toLowerCase() === title.toLowerCase())) actions.push({title, assignee, dueDate});
   }
   return actions;

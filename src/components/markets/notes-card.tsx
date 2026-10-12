@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +15,7 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
   const [content, setContent] = useState("");
   const [initiativeId, setInitiativeId] = useState("GENERAL");
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [summary, setSummary] = useState("");
   const [summaryError, setSummaryError] = useState("");
@@ -26,6 +27,17 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
     const response = await fetch("/api/notes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content, marketId, initiativeId }) });
     if (!response.ok) { const data = await response.json().catch(() => ({})); setError(data.error ?? "Could not save note."); setSaving(false); return; }
     setContent(""); setSaving(false); setSummary(""); setSummaryError(""); router.refresh();
+  }
+
+  async function deleteNote(id: string) {
+    if (!window.confirm("Delete this note permanently?")) return;
+    setDeletingId(id); setError("");
+    try {
+      const response = await fetch("/api/notes", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, marketId }) });
+      if (!response.ok) { const data = await response.json().catch(() => ({})); throw new Error(data.error ?? "Could not delete note."); }
+      setSummary(""); setSummaryError(""); router.refresh();
+    } catch (e) { setError(e instanceof Error ? e.message : "Could not delete note."); }
+    finally { setDeletingId(null); }
   }
 
   async function summarizeCurrentStatus() {
@@ -65,7 +77,7 @@ export function NotesCard({ marketId, initiatives, notes }: { marketId: string; 
 
       <div className="max-h-72 space-y-2 overflow-y-auto pr-2">
         {notes.length===0&&<p className="text-sm text-muted-foreground">No notes added yet.</p>}
-        {notes.map(note=><div key={note.id} className="rounded-lg border p-3"><div className="mb-1 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-medium">{note.initiative ? `${note.initiative.code ? `${note.initiative.code} · ` : ""}${note.initiative.name}` : "General"}</p><p className="text-xs text-muted-foreground">{format(new Date(note.createdAt), "MMM d, yyyy · HH:mm")}</p></div><p className="whitespace-pre-wrap text-sm">{note.content}</p></div>)}
+        {notes.map(note=><div key={note.id} className="rounded-lg border p-3"><div className="mb-1 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-medium">{note.initiative ? `${note.initiative.code ? `${note.initiative.code} · ` : ""}${note.initiative.name}` : "General"}</p><div className="flex items-center gap-2"><p className="text-xs text-muted-foreground">{format(new Date(note.createdAt), "MMM d, yyyy · HH:mm")}</p><Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-red-600 hover:bg-red-50 hover:text-red-700" disabled={deletingId===note.id} onClick={()=>deleteNote(note.id)} aria-label="Delete note" title="Delete note">{deletingId===note.id?<Loader2 className="h-4 w-4 animate-spin"/>:<Trash2 className="h-4 w-4"/>}<span className="ml-1">Delete</span></Button></div></div><p className="whitespace-pre-wrap text-sm">{note.content}</p></div>)}
       </div>
     </CardContent>
   </Card>;

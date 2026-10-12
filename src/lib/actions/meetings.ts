@@ -51,10 +51,48 @@ function normalize(input: MeetingInput) {
   };
 }
 
+
+// Extract only explicitly marked action items; never turn general meeting notes into tasks.
+function extractActions(notes: string) {
+  const lines = notes.split(/\r?\n/);
+  const actions: { title: string; assignee: string; dueDate: Date | null }[] = [];
+  for (const line of lines) {
+    const match = line.trim().match(/^(?:[-*]\\s*)?(?:\\[\\s*\\]\\s*)?(?:ACTION|TASK|TODO|ACTION ITEM|AUFGABE|TO-DO)\\s*[:\\-]\\s*(.+)$/i);
+    if (!match) continue;
+    let title = match[1].trim();
+    const owner = title.match(/(?:\\s+\\|\\s*|\\s+)(?:owner|assignee|responsible|verantwortlich)\\s*:\\s*([^|]+?)(?=\\s*\\||$)/i);
+    const due = title.match(/(?:\\s+\\|\\s*|\\s+)(?:due|deadline|fällig)\\s*:\\s*(\\d{4}-\\d{2}-\\d{2})(?=\\s*\\||$)/i);
+    const assignee = owner?.[1]?.trim() || "Unassigned";
+    const dueDate = due ? new Date(due[1] + "T12:00:00Z") : null;
+    title = title.replace(/\\s*\\|?\\s*(?:owner|assignee|responsible|verantwortlich|due|deadline|fällig)\\s*:\\s*[^|]+/gi, "").trim();
+    if (title.length >= 3 && (!dueDate || !Number.isNaN(dueDate.getTime())) && !actions.some(a => a.title.toLowerCase() === title.toLowerCase())) actions.push({title, assignee, dueDate});
+  }
+  return actions;
+}
+
+async function syncMeetingActions(meeting: {id:string; title:string; notes:string; date:Date; marketId:string|null; initiativeId:string|null}) {
+  const marker = `[Meeting:${meeting.id}]`;
+  const actions = extractActions(meeting.notes);
+  const existing = await prisma.task.findMany({where:{description:{contains:marker}}});
+  for (const action of actions) {
+    const previous = existing.find(t => t.title.toLowerCase() === action.title.toLowerCase());
+    if (previous) continue;
+    await prisma.task.create({data:{
+      title:action.title,
+      description:`Automatically imported from meeting "${meeting.title}" ${marker}`,
+      assignee:action.assignee,
+      dueDate:action.dueDate ?? meeting.date,
+      marketId:meeting.marketId,
+      initiativeId:meeting.initiativeId,
+    }});
+  }
+}
+
 export async function createMeeting(input: MeetingInput) {
   const parsed = meetingSchema.parse(input);
   const data = normalize(parsed);
   const meeting = await prisma.meeting.create({ data });
+  await syncMeetingActions(meeting);
   await prisma.activity.create({
     data: {
       type: "MEETING_SCHEDULED",
@@ -106,6 +144,7 @@ export async function updateMeeting(id: string, input: MeetingInput) {
   const parsed = meetingSchema.parse(input);
   const data = normalize(parsed);
   const meeting = await prisma.meeting.update({ where: { id }, data });
+  await syncMeetingActions(meeting);
   revalidatePath("/meetings");
   revalidatePath("/dashboard");
   if (meeting.marketId) revalidatePath(`/markets/${meeting.marketId}`);

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
 function safeSegment(value:string){return value.trim().replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"")||"unassigned"}
 export async function POST(request:Request){try{const form=await request.formData();const file=form.get("file");const contextType=String(form.get("contextType")||"");const contextCode=String(form.get("contextCode")||"");const entityId=String(form.get("entityId")||"");const isGeneral=contextType==="GENERAL";const category=String(form.get("category")||"");
-if(category==="HQ_DOCUMENT"&&!isGeneral)return NextResponse.json({error:"HQ documents must use the shared HQ context."},{status:400});
+if(category==="HQ_DOCUMENT"&&contextType!=="MARKET")return NextResponse.json({error:"HQ documents must be assigned to the current market."},{status:400});
 if(category==="MARKET_DOCUMENT"&&contextType!=="MARKET")return NextResponse.json({error:"Market documents must be assigned to a market."},{status:400});
 if(!(file instanceof File)||file.size===0)return NextResponse.json({error:"No file received."},{status:400});
 if(!isGeneral&&(!entityId||(contextType!=="MARKET"&&contextType!=="INITIATIVE")))return NextResponse.json({error:"A market, initiative, or General category must be assigned."},{status:400});

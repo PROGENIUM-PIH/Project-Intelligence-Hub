@@ -39,7 +39,7 @@ export default async function ManagementReportPage({ searchParams }: { searchPar
   }).slice(0, 8);
   const openTasks = tasks.filter((t) => t.status !== "DONE").slice(0, 8);
   const openRisks = risks.filter((r) => r.status !== "CLOSED").slice(0, 5);
-  const nextDeadline = openTasks.find((t) => t.dueDate >= new Date())?.dueDate ?? initiative?.targetDate;
+  const nextDeadline = openTasks.find((t) => t.dueDate !== null && t.dueDate >= new Date())?.dueDate ?? initiative?.targetDate;
   const sourceSummary = meetings[0]?.notes?.split(/\n+/).filter(Boolean).slice(0, 3).join(" ") || scopedActivities[0]?.description || "No recent narrative source has been captured for this scope yet.";
 
   return (

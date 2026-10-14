@@ -18,7 +18,7 @@ const formSchema = z.object({
   status: z.enum(["TODO", "IN_PROGRESS", "DONE", "BLOCKED"]),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
   assignee: z.string().min(1, "Assignee is required"),
-  dueDate: z.string().min(1, "Due date is required"),
+  dueDate: z.string().optional(),
   initiativeId: z.string().optional(),
   marketId: z.string().optional(),
 }).refine((data) => !!data.initiativeId || !!data.marketId, { message: "Select a market or initiative", path: ["initiativeId"] });
@@ -30,7 +30,7 @@ type TaskFormProps = {
   initiatives: Option[];
   markets: Option[];
   task?: {
-    id: string; title: string; description: string; status: string; priority: string; assignee: string; dueDate: Date;
+    id: string; title: string; description: string; status: string; priority: string; assignee: string; dueDate: Date | null;
     initiativeId: string | null; marketId: string | null;
   };
   onSuccess: () => void;
@@ -42,14 +42,14 @@ export function TaskForm({ initiatives, markets, task, onSuccess }: TaskFormProp
     resolver: zodResolver(formSchema),
     defaultValues: task ? {
       title: task.title, description: task.description, status: task.status as FormValues["status"], priority: task.priority as FormValues["priority"], assignee: task.assignee,
-      dueDate: format(task.dueDate, "yyyy-MM-dd"), initiativeId: task.initiativeId ?? "", marketId: task.marketId ?? "",
+      dueDate: task.dueDate ? format(task.dueDate, "yyyy-MM-dd") : "", initiativeId: task.initiativeId ?? "", marketId: task.marketId ?? "",
     } : { title: "", description: "", status: "TODO", priority: "MEDIUM", assignee: "", dueDate: "", initiativeId: initiatives[0]?.id ?? "", marketId: "" },
   });
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
     try {
-      const payload = { ...values, initiativeId: values.initiativeId || null, marketId: values.marketId || null, dueDate: new Date(values.dueDate) };
+      const payload = { ...values, initiativeId: values.initiativeId || null, marketId: values.marketId || null, dueDate: values.dueDate ? new Date(values.dueDate) : null };
       if (task) await updateTask(task.id, payload); else await createTask(payload);
       onSuccess();
     } catch { setServerError("Something went wrong. Please try again."); }
@@ -64,7 +64,7 @@ export function TaskForm({ initiatives, markets, task, onSuccess }: TaskFormProp
     </div>
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-1.5"><Label htmlFor="assignee">Assignee</Label><Input id="assignee" {...register("assignee")} />{errors.assignee&&<p className="text-xs text-destructive">{errors.assignee.message}</p>}</div>
-      <div className="space-y-1.5"><Label htmlFor="dueDate">Due Date</Label><Input id="dueDate" type="date" {...register("dueDate")} />{errors.dueDate&&<p className="text-xs text-destructive">{errors.dueDate.message}</p>}</div>
+      <div className="space-y-1.5"><Label htmlFor="dueDate">Due Date (optional)</Label><Input id="dueDate" type="date" {...register("dueDate")} />{errors.dueDate&&<p className="text-xs text-destructive">{errors.dueDate.message}</p>}</div>
     </div>
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="space-y-1.5"><Label>Market</Label><Select value={watch("marketId") || "NONE"} onValueChange={(v)=>setValue("marketId",v==="NONE"?"":v)}><SelectTrigger><SelectValue placeholder="Optional"/></SelectTrigger><SelectContent><SelectItem value="NONE">No market</SelectItem>{markets.map((m)=><SelectItem key={m.id} value={m.id}>{m.code} · {m.name}</SelectItem>)}</SelectContent></Select></div>

@@ -44,7 +44,7 @@ export function TaskForm({ initiatives, markets, fixedMarketId, task, onSuccess 
     defaultValues: task ? {
       title: task.title, description: task.description, status: task.status as FormValues["status"], priority: task.priority as FormValues["priority"], assignee: task.assignee,
       dueDate: task.dueDate ? format(task.dueDate, "yyyy-MM-dd") : "", initiativeId: task.initiativeId ?? "", marketId: fixedMarketId ?? task.marketId ?? "",
-    } : { title: "", description: "", status: "TODO", priority: "MEDIUM", assignee: "", dueDate: "", initiativeId: initiatives[0]?.id ?? "", marketId: fixedMarketId ?? "" },
+    } : { title: "", description: "", status: "TODO", priority: "MEDIUM", assignee: "", dueDate: "", initiativeId: fixedMarketId ? "" : initiatives[0]?.id ?? "", marketId: fixedMarketId ?? "" },
   });
 
   const onSubmit = async (values: FormValues) => {

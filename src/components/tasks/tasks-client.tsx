@@ -20,7 +20,7 @@ import { deleteTask } from "@/lib/actions/tasks";
 type ScopeOption = { id: string; code: string | null; name: string };
 
 export type TaskRow = {
-  id: string; title: string; description: string; status: string; priority: string; assignee: string; dueDate: Date;
+  id: string; title: string; description: string; status: string; priority: string; assignee: string; dueDate: Date | null;
   initiativeId: string | null; marketId: string | null;
   initiative: ScopeOption | null; market: ScopeOption | null;
 };
@@ -48,7 +48,7 @@ export function TasksClient({ tasks, initiatives, markets, initialStatus="ALL" }
     { accessorKey: "assignee", header: "Assignee", cell: ({ row }) => <span className="text-sm text-foreground">{row.original.assignee}</span> },
     { accessorKey: "priority", header: "Priority", cell: ({ row }) => { const t=priorityTone(row.original.priority); return <StatusBadge label={t.label} tone={t.tone}/>; } },
     { accessorKey: "status", header: "Status", cell: ({ row }) => { const t=taskStatusTone(row.original.status); return <StatusBadge label={t.label} tone={t.tone}/>; } },
-    { accessorKey: "dueDate", header: "Due Date", cell: ({ row }) => <span className="text-sm text-muted-foreground">{format(row.original.dueDate,"MMM d, yyyy")}</span> },
+    { accessorKey: "dueDate", header: "Due Date", cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.dueDate ? format(row.original.dueDate,"MMM d, yyyy") : "—"}</span> },
     { id: "actions", header: "", enableSorting: false, cell: ({ row }) => <div className="flex justify-end gap-1"><Button variant="ghost" size="icon" className="h-8 w-8" onClick={()=>{setEditingTask(row.original);setDialogOpen(true)}}><Pencil className="h-4 w-4"/></Button><Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={()=>setDeleteTarget(row.original)}><Trash2 className="h-4 w-4"/></Button></div> },
   ];
 

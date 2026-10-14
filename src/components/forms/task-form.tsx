@@ -29,6 +29,7 @@ type Option = { id: string; code: string | null; name: string };
 type TaskFormProps = {
   initiatives: Option[];
   markets: Option[];
+  fixedMarketId?: string;
   task?: {
     id: string; title: string; description: string; status: string; priority: string; assignee: string; dueDate: Date | null;
     initiativeId: string | null; marketId: string | null;
@@ -36,20 +37,20 @@ type TaskFormProps = {
   onSuccess: () => void;
 };
 
-export function TaskForm({ initiatives, markets, task, onSuccess }: TaskFormProps) {
+export function TaskForm({ initiatives, markets, fixedMarketId, task, onSuccess }: TaskFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: task ? {
       title: task.title, description: task.description, status: task.status as FormValues["status"], priority: task.priority as FormValues["priority"], assignee: task.assignee,
-      dueDate: task.dueDate ? format(task.dueDate, "yyyy-MM-dd") : "", initiativeId: task.initiativeId ?? "", marketId: task.marketId ?? "",
-    } : { title: "", description: "", status: "TODO", priority: "MEDIUM", assignee: "", dueDate: "", initiativeId: initiatives[0]?.id ?? "", marketId: "" },
+      dueDate: task.dueDate ? format(task.dueDate, "yyyy-MM-dd") : "", initiativeId: task.initiativeId ?? "", marketId: fixedMarketId ?? task.marketId ?? "",
+    } : { title: "", description: "", status: "TODO", priority: "MEDIUM", assignee: "", dueDate: "", initiativeId: initiatives[0]?.id ?? "", marketId: fixedMarketId ?? "" },
   });
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
     try {
-      const payload = { ...values, initiativeId: values.initiativeId || null, marketId: values.marketId || null, dueDate: values.dueDate ? new Date(values.dueDate) : null };
+      const payload = { ...values, initiativeId: values.initiativeId || null, marketId: fixedMarketId ?? (values.marketId || null), dueDate: values.dueDate ? new Date(values.dueDate) : null };
       if (task) await updateTask(task.id, payload); else await createTask(payload);
       onSuccess();
     } catch { setServerError("Something went wrong. Please try again."); }
@@ -66,11 +67,11 @@ export function TaskForm({ initiatives, markets, task, onSuccess }: TaskFormProp
       <div className="space-y-1.5"><Label htmlFor="assignee">Assignee</Label><Input id="assignee" {...register("assignee")} />{errors.assignee&&<p className="text-xs text-destructive">{errors.assignee.message}</p>}</div>
       <div className="space-y-1.5"><Label htmlFor="dueDate">Due Date (optional)</Label><Input id="dueDate" type="date" {...register("dueDate")} />{errors.dueDate&&<p className="text-xs text-destructive">{errors.dueDate.message}</p>}</div>
     </div>
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div className="space-y-1.5"><Label>Market</Label><Select value={watch("marketId") || "NONE"} onValueChange={(v)=>setValue("marketId",v==="NONE"?"":v)}><SelectTrigger><SelectValue placeholder="Optional"/></SelectTrigger><SelectContent><SelectItem value="NONE">No market</SelectItem>{markets.map((m)=><SelectItem key={m.id} value={m.id}>{m.code} · {m.name}</SelectItem>)}</SelectContent></Select></div>
+    <div className={fixedMarketId ? "grid gap-4" : "grid gap-4 sm:grid-cols-2"}>
+      {!fixedMarketId && <div className="space-y-1.5"><Label>Market</Label><Select value={watch("marketId") || "NONE"} onValueChange={(v)=>setValue("marketId",v==="NONE"?"":v)}><SelectTrigger><SelectValue placeholder="Optional"/></SelectTrigger><SelectContent><SelectItem value="NONE">No market</SelectItem>{markets.map((m)=><SelectItem key={m.id} value={m.id}>{m.code} · {m.name}</SelectItem>)}</SelectContent></Select></div>}
       <div className="space-y-1.5"><Label>Initiative</Label><Select value={watch("initiativeId") || "NONE"} onValueChange={(v)=>setValue("initiativeId",v==="NONE"?"":v)}><SelectTrigger><SelectValue placeholder="Optional"/></SelectTrigger><SelectContent><SelectItem value="NONE">No initiative</SelectItem>{initiatives.map((i)=><SelectItem key={i.id} value={i.id}>{i.code ? `${i.code} · ` : ""}{i.name}</SelectItem>)}</SelectContent></Select>{errors.initiativeId&&<p className="text-xs text-destructive">{errors.initiativeId.message}</p>}</div>
     </div>
-    <p className="text-xs text-muted-foreground">Assign the task to a market, an initiative, or both.</p>
+    <p className="text-xs text-muted-foreground">{fixedMarketId ? "This task is assigned to the current market. Optionally link an initiative." : "Assign the task to a market, an initiative, or both."}</p>
     {serverError&&<p className="text-sm text-destructive">{serverError}</p>}
     <div className="flex justify-end gap-2 pt-2"><Button type="submit" disabled={isSubmitting}>{task?"Save Changes":"Create Task"}</Button></div>
   </form>;

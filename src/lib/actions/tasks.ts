@@ -10,7 +10,7 @@ const taskSchema = z.object({
   status: z.enum(["TODO", "IN_PROGRESS", "DONE", "BLOCKED"]),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
   assignee: z.string().min(1),
-  dueDate: z.coerce.date(),
+  dueDate: z.coerce.date().nullish(),
   initiativeId: z.string().optional().nullable(),
   marketId: z.string().optional().nullable(),
 }).refine((data) => !!data.initiativeId || !!data.marketId, {
@@ -25,6 +25,7 @@ function normalize(input: TaskInput) {
     ...input,
     initiativeId: input.initiativeId || null,
     marketId: input.marketId || null,
+    dueDate: input.dueDate ?? null,
   };
 }
 

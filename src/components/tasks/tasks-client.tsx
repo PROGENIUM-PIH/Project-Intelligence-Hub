@@ -25,7 +25,7 @@ export type TaskRow = {
   initiative: ScopeOption | null; market: ScopeOption | null;
 };
 
-export function TasksClient({ tasks, initiatives, markets, initialStatus="ALL" }: { tasks: TaskRow[]; initiatives: ScopeOption[]; markets: ScopeOption[]; initialStatus?: string }) {
+export function TasksClient({ tasks, initiatives, markets, initialStatus="ALL", fixedMarketId }: { tasks: TaskRow[]; initiatives: ScopeOption[]; markets: ScopeOption[]; initialStatus?: string; fixedMarketId?: string }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
@@ -59,7 +59,7 @@ export function TasksClient({ tasks, initiatives, markets, initialStatus="ALL" }
       <Select value={scopeFilter} onValueChange={setScopeFilter}><SelectTrigger className="w-full sm:w-56"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="ALL">All markets & initiatives</SelectItem>{markets.map(m=><SelectItem key={`M:${m.id}`} value={`M:${m.id}`}>Market: {m.code} · {m.name}</SelectItem>)}{initiatives.map(i=><SelectItem key={`I:${i.id}`} value={`I:${i.id}`}>Initiative: {i.code ? `${i.code} · ` : ""}{i.name}</SelectItem>)}</SelectContent></Select>
     </div><Button onClick={()=>{setEditingTask(undefined);setDialogOpen(true)}}><Plus className="h-4 w-4"/>New Task</Button></FilterBar>
     <DataTable columns={columns} data={filtered} emptyMessage="No tasks match your filters."/>
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>{editingTask?"Edit Task":"New Task"}</DialogTitle></DialogHeader><TaskForm initiatives={initiatives} markets={markets} task={editingTask} onSuccess={()=>{setDialogOpen(false);router.refresh()}}/></DialogContent></Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>{editingTask?"Edit Task":"New Task"}</DialogTitle></DialogHeader><TaskForm initiatives={initiatives} markets={markets} fixedMarketId={fixedMarketId} task={editingTask} onSuccess={()=>{setDialogOpen(false);router.refresh()}}/></DialogContent></Dialog>
     <ConfirmDeleteDialog open={!!deleteTarget} onOpenChange={(open)=>!open&&setDeleteTarget(null)} title="Delete task" description={`Are you sure you want to delete "${deleteTarget?.title}"? This cannot be undone.`} onConfirm={async()=>{if(!deleteTarget)return;await deleteTask(deleteTarget.id);setDeleteTarget(null);router.refresh()}}/>
   </div>;
 }

@@ -28,7 +28,7 @@ export function MeetingsClient({meetings,markets,initiatives}:{meetings:MeetingR
  const columns:ColumnDef<MeetingRow>[]=[
   {accessorKey:"title",header:"Meeting",cell:({row})=><button className="min-w-0 max-w-xs text-left" onClick={()=>setViewingMeeting(row.original)}><p className="truncate text-sm font-medium hover:underline">{row.original.title}</p><p className="text-xs text-muted-foreground">{meetingTypeLabel(row.original.type)}</p></button>},
   {id:"market",header:"Market",cell:({row})=><span className="text-sm">{row.original.market?.code||"—"}</span>},
-  {id:"initiative",header:"Initiative",cell:({row})=><span className="text-sm">{row.original.initiative?.code||"—"}</span>},
+  {id:"location",header:"Location",cell:({row})=>{const location=row.original.location?.trim();const label=!location?"—":/teams/i.test(location)?"Microsoft Teams":"On-site";return <span className="text-sm">{label}</span>;}},
   {accessorKey:"date",header:"Date",cell:({row})=><span className="text-sm text-muted-foreground">{format(new Date(row.original.date),"EEE, MMM d yyyy · HH:mm")}</span>},
   {id:"actions",header:"",enableSorting:false,cell:({row})=><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" onClick={()=>setViewingMeeting(row.original)}><Eye className="h-4 w-4"/></Button><Button variant="ghost" size="icon" onClick={()=>{setEditingMeeting(row.original);setDialogOpen(true)}}><Pencil className="h-4 w-4"/></Button><Button variant="ghost" size="icon" className="text-destructive" onClick={()=>setDeleteTarget(row.original)}><Trash2 className="h-4 w-4"/></Button></div>}
  ];

@@ -78,7 +78,11 @@ export function meetingTypeLabel(type: string): string {
     case "WORKSHOP":
       return "Workshop";
     case "KICKOFF":
-      return "Kickoff";
+      return "Kick-off";
+    case "ROLLOUT_PLAN_DEVELOPMENT":
+      return "Roll-out Plan Development";
+    case "FOLLOW_UP":
+      return "Follow-up";
     case "OTHER":
       return "Other";
     default:

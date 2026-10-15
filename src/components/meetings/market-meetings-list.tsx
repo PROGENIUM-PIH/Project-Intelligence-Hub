@@ -47,7 +47,7 @@ export function MarketMeetingsList({ market, meetings }: { market: Market; meeti
                   {new Intl.DateTimeFormat("en-GB", {
                     weekday: "short", day: "2-digit", month: "short", year: "numeric",
                     hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Europe/Berlin",
-                  }).format(new Date(meeting.date))} · {meetingTypeLabel(meeting.type)}
+                  }).format(new Date(meeting.date))}{meeting.endTime ? `–${meeting.endTime}` : ""} · {meetingTypeLabel(meeting.type)}
                 </p>
                 <p className="mt-1 text-[11px] text-muted-foreground">Click to view or edit</p>
               </div>

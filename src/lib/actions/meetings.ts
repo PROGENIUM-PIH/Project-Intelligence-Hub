@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 const meetingSchema = z
   .object({
     title: z.string().min(3),
-    type: z.enum(["STATUS_REVIEW", "STEERING_COMMITTEE", "WORKSHOP", "KICKOFF", "OTHER"]),
+    type: z.enum(["STATUS_REVIEW", "STEERING_COMMITTEE", "WORKSHOP", "KICKOFF", "ROLLOUT_PLAN_DEVELOPMENT", "FOLLOW_UP", "OTHER"]),
     scope: z.enum(["MARKET", "INITIATIVE"]),
     date: z.coerce.date(),
     endTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional().nullable(),

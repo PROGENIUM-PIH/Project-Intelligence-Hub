@@ -10,7 +10,7 @@ const meetingSchema = z
     type: z.enum(["STATUS_REVIEW", "STEERING_COMMITTEE", "WORKSHOP", "KICKOFF", "OTHER"]),
     scope: z.enum(["MARKET", "INITIATIVE"]),
     date: z.coerce.date(),
-    endTime: z.string().regex(/^([01]\\d|2[0-3]):[0-5]\\d$/).optional().nullable(),
+    endTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional().nullable(),
     notes: z.string().default(""),
     participants: z.string().optional().nullable(),
     location: z.string().optional().nullable(),

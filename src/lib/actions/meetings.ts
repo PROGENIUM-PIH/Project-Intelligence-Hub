@@ -10,6 +10,7 @@ const meetingSchema = z
     type: z.enum(["STATUS_REVIEW", "STEERING_COMMITTEE", "WORKSHOP", "KICKOFF", "OTHER"]),
     scope: z.enum(["MARKET", "INITIATIVE"]),
     date: z.coerce.date(),
+    endTime: z.string().regex(/^([01]\\d|2[0-3]):[0-5]\\d$/).optional().nullable(),
     notes: z.string().default(""),
     participants: z.string().optional().nullable(),
     location: z.string().optional().nullable(),
@@ -17,6 +18,7 @@ const meetingSchema = z
     marketId: z.string().optional().nullable(),
     initiativeId: z.string().optional().nullable(),
   })
+  .refine((data) => !data.endTime || data.endTime > `${String(data.date.getHours()).padStart(2, "0")}:${String(data.date.getMinutes()).padStart(2, "0")}`, { message: "End time must be after start time.", path: ["endTime"] })
   .refine((data) => (data.scope === "MARKET" ? !!data.marketId : !!data.initiativeId), {
     message: "Select a market or initiative matching the chosen scope.",
     path: ["marketId"],
@@ -42,6 +44,7 @@ function normalize(input: MeetingInput) {
     type: input.type,
     scope: input.scope,
     date: input.date,
+    endTime: input.endTime || null,
     notes: input.notes || "",
     participants: input.participants || null,
     location: input.location || null,

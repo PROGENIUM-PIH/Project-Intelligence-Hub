@@ -9,6 +9,7 @@ type MeetingItem = {
   title: string;
   type: string;
   date: Date;
+  endTime?: string | null;
   scopeLabel: string;
 };
 
@@ -33,7 +34,7 @@ export function UpcomingMeetings({ items }: { items: MeetingItem[] }) {
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-foreground">{m.title}</p>
               <p className="text-xs text-muted-foreground">
-                {format(m.date, "EEE, MMM d")} · {meetingTypeLabel(m.type)} · {m.scopeLabel}
+                {format(m.date, "EEE, MMM d · HH:mm")}{m.endTime ? `–${m.endTime}` : ""} · {meetingTypeLabel(m.type)} · {m.scopeLabel}
               </p>
             </div>
           </div>

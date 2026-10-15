@@ -233,6 +233,7 @@ model Meeting {
   type      MeetingType @default(STATUS_REVIEW)
   scope     MeetingScope
   date      DateTime
+  endTime   String?
   notes     String
   participants String?
   location     String?
